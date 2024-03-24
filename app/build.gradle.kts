@@ -9,12 +9,12 @@ plugins {
 
 android {
     namespace = "com.tracking.hardwaretracking"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "com.tracking.hardwaretracking"
         minSdk = 24
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
@@ -29,6 +29,9 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+    buildFeatures {
+        viewBinding = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -79,6 +82,11 @@ dependencies {
     // Chucker
     debugImplementation("com.github.chuckerteam.chucker:library:4.0.0")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:3.5.2")
+
+    implementation("com.github.yuriy-budiyev:code-scanner:2.3.0")
+    implementation("com.auth0:java-jwt:3.18.2")
+
+
 }
 kapt {
     correctErrorTypes = true

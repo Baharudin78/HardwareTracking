@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:name=".BaseApplication"
         android:allowBackup="true"
@@ -14,13 +18,19 @@
         android:theme="@style/Theme.HardwareTracking"
         tools:targetApi="31">
         <activity
+            android:name=".feature.login.presentation.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".feature.hardware.HardwareActivity"
+            android:exported="false" />
+        <activity
             android:name=".feature.scan.ScanActivity"
             android:exported="false" />
         <activity
-            android:name=".feature.home.HomeActivity"
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".feature.login.LoginActivity"
+            android:name=".feature.splash.CustomSplashActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
