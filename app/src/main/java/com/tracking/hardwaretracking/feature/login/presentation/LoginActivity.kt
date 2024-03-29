@@ -133,6 +133,13 @@ class LoginActivity : AppCompatActivity() {
                 }
             }
         }
+        loginEntity.name.takeIf { it.isNotEmpty() }?.let { name ->
+            coroutineScope {
+                launch {
+                    dataStore.saveNameUser(name)
+                }
+            }
+        }
 
         goToMainActivity()
     }

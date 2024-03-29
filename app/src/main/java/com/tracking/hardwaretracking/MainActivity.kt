@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.databinding.ActivityMainBinding
+import com.tracking.hardwaretracking.feature.barang.presentation.ListBarangActivity
 import com.tracking.hardwaretracking.feature.hardware.HardwareActivity
 import com.tracking.hardwaretracking.feature.login.data.dto.User
 import com.tracking.hardwaretracking.feature.scan.ScanActivity
@@ -46,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             btnTakeHardware.setOnClickListener {
-                startActivity(Intent(this@MainActivity, HardwareActivity::class.java))
+                startActivity(Intent(this@MainActivity, ListBarangActivity::class.java))
             }
         }
     }

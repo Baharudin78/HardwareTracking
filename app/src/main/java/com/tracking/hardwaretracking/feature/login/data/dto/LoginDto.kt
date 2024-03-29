@@ -8,5 +8,11 @@ data class LoginDto(
     @SerializedName("token")
     val token: String?,
     @SerializedName("role")
-    val role : String?
+    val role : String?,
+    @SerializedName("name")
+    val name : String?,
+    @SerializedName("email")
+    val email : String?,
+    @SerializedName("id")
+    val id : String?,
 )

@@ -7,5 +7,8 @@ fun LoginDto.toLoginEntity(): LoginDomain {
     return LoginDomain(
         token = token.orEmpty(),
         role = role.orEmpty(),
+        name = name.orEmpty(),
+        email = email.orEmpty(),
+        id = id.orEmpty(),
     )
 }

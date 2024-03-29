@@ -13,5 +13,6 @@ object Constants {
     const val MY_PREF = "my_preferences"
     const val USER_TOKEN = "user_token"
     const val USER_ROLE_KEY = "user_role"
+    const val USER_NAME_KEY = "user_name"
     const val EXTRA_DATA = "EXTRA_DATA"
 }
