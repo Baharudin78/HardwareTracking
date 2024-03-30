@@ -175,8 +175,10 @@ class HardwareActivity : AppCompatActivity() {
             btnSubmit.setOnClickListener {
                 CoroutineScope(Dispatchers.Main).launch {
                     dataStore.userRole.collectLatest { role ->
-                        val request = if (userRole == "admin") {
+                        val request = if (role == "admin") {
                             Log.d("HARDWARE asu bansatt", "admin")
+                            Log.d("HARDWARE asu bansatt", "admin user : $adminUserSelected")
+
                             UpdateBarangRequest(
                                 name = tvNamaBarang.text.toString(),
                                 qrcode = tvQrCode.text.toString(),
