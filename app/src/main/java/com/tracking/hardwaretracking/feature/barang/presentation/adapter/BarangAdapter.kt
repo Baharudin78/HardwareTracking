@@ -30,9 +30,10 @@ class BarangAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bindItem(barangDomain: BarangDomain) {
             binding.apply {
-                tvQrCode.text = barangDomain.qrcode
-                tvNamaBarang.text = barangDomain.name
-                tvNamaPemegang.text = barangDomain.responsiblePerson
+                tvCurrentLoc.text = "Lokasi : ${barangDomain.currentLocation}"
+                tvQrCode.text = "EncryptedQR : ${barangDomain.qrcode}"
+                tvNamaBarang.text = "Nama barang : ${barangDomain.name}"
+                tvNamaPemegang.text = "PIC :${barangDomain.responsiblePerson}"
                 root.setOnClickListener {
                     onClickListener?.onClick(barangDomain)
                 }

@@ -13,5 +13,11 @@ data class BarangDto(
     @SerializedName("qrcode")
     val qrcode: String?,
     @SerializedName("responsible_person")
-    val responsiblePerson: String?
+    val responsiblePerson: String?,
+    @SerializedName("current_location")
+    val currentLocation: String?,
+    @SerializedName("desc_location")
+    val descLocation: String?,
+    @SerializedName("encrypt_qrcode")
+    val encryptQrcode: String?,
 )

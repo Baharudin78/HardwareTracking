@@ -3,11 +3,18 @@ package com.tracking.hardwaretracking.feature.login.data.repository
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.tracking.hardwaretracking.core.BaseResult
+import com.tracking.hardwaretracking.core.WrappedListResponse
 import com.tracking.hardwaretracking.core.WrappedResponse
+import com.tracking.hardwaretracking.feature.barang.data.dto.BarangDto
+import com.tracking.hardwaretracking.feature.barang.data.mapper.toDomain
+import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
 import com.tracking.hardwaretracking.feature.login.data.api.LoginService
 import com.tracking.hardwaretracking.feature.login.data.dto.LoginDto
+import com.tracking.hardwaretracking.feature.login.data.dto.UserDto
+import com.tracking.hardwaretracking.feature.login.data.mapper.toDomain
 import com.tracking.hardwaretracking.feature.login.data.mapper.toLoginEntity
 import com.tracking.hardwaretracking.feature.login.domain.model.LoginDomain
+import com.tracking.hardwaretracking.feature.login.domain.model.UserDomain
 import com.tracking.hardwaretracking.feature.login.domain.repository.LoginRepository
 import com.tracking.hardwaretracking.feature.login.domain.request.LoginRequest
 import kotlinx.coroutines.flow.Flow
@@ -40,6 +47,26 @@ class LoginRepositoryImpl @Inject constructor(
                         )
                     )
                 )
+            }
+        }
+    }
+
+    override suspend fun getListUser(): Flow<BaseResult<List<UserDomain>, WrappedListResponse<UserDto>>> {
+        return flow {
+            val response = loginService.getListUser()
+            if (response.isSuccessful){
+                val body = response.body()!!
+                val users = mutableListOf<UserDomain>()
+                body.data?.forEach { menuResponse ->
+                    users.add(
+                        menuResponse.toDomain()
+                    )
+                }
+                emit(BaseResult.Success(users))
+            }else{
+                val type = object : TypeToken<WrappedListResponse<UserDto>>(){}.type
+                val err = Gson().fromJson<WrappedListResponse<UserDto>>(response.errorBody()!!.charStream(), type)!!
+                emit(BaseResult.Error(err))
             }
         }
     }

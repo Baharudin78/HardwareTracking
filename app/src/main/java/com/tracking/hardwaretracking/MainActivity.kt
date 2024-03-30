@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
                 dataStore.userRole.collectLatest { role ->
                     showToast(role)
                     when (role) {
-                        "admin" -> binding.btnScan.gone()
+                        "user" -> binding.btnScan.gone()
                     }
                 }
             }

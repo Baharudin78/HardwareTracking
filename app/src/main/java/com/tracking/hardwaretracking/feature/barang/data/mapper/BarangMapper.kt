@@ -9,6 +9,8 @@ fun BarangDto.toDomain() : BarangDomain {
         responsiblePerson = responsiblePerson.orEmpty(),
         id = id.orEmpty(),
         qrcode = qrcode.orEmpty(),
-
+        currentLocation = currentLocation.orEmpty(),
+        descLocation = descLocation.orEmpty(),
+        encryptQrcode = encryptQrcode.orEmpty()
     )
 }

@@ -26,6 +26,16 @@
             android:layout_marginStart="16dp"/>
     </com.google.android.material.appbar.AppBarLayout>
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBar" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -55,60 +65,54 @@
         android:layout_marginTop="10dp"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/clIdentity"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/clUser"
+        app:layout_constraintTop_toBottomOf="@+id/tvNamaBarang"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvNamaBarang">
+        android:layout_marginHorizontal="16dp">
 
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            tools:text="KOde QR"
-            android:id="@+id/tvNamaPemegang"
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:visibility="visible"
             app:layout_constraintTop_toTopOf="parent"
-            android:textColor="@color/white"
-            android:textSize="18sp"
             app:layout_constraintStart_toStartOf="parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="10dp"/>
+            app:layout_constraintEnd_toEndOf="parent"/>
+
 
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            app:errorEnabled="true"
-            app:layout_constraintTop_toTopOf="parent"
             android:id="@+id/name_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:visibility="gone"
-            android:layout_marginTop="30dp"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            app:boxBackgroundColor="@android:color/transparent"
-            android:layout_height="wrap_content">
+            android:hint="Select item">
+
             <com.google.android.material.textfield.TextInputEditText
-                android:layout_width="match_parent"
                 android:id="@+id/etUser"
-                android:textColor="@color/white"
-                android:textColorHint="@color/white"
-                android:layout_height="wrap_content"/>
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:imeOptions="actionDone"/>
+
         </com.google.android.material.textfield.TextInputLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
 
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:id="@+id/location_input"
         app:errorEnabled="true"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@+id/clIdentity"
+        android:layout_marginHorizontal="16dp"
+        app:layout_constraintTop_toBottomOf="@+id/clUser"
         app:boxBackgroundColor="@android:color/transparent"
         android:layout_height="wrap_content">
         <com.google.android.material.textfield.TextInputEditText
@@ -126,8 +130,7 @@
         app:errorEnabled="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginHorizontal="16dp"
         app:layout_constraintTop_toBottomOf="@+id/location_input"
         app:boxBackgroundColor="@android:color/transparent"
         android:layout_height="wrap_content">
