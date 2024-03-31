@@ -1,19 +1,14 @@
 package com.tracking.hardwaretracking
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.databinding.ActivityMainBinding
 import com.tracking.hardwaretracking.feature.barang.presentation.ListBarangActivity
-import com.tracking.hardwaretracking.feature.hardware.HardwareActivity
-import com.tracking.hardwaretracking.feature.login.data.dto.User
+import com.tracking.hardwaretracking.feature.login.presentation.LoginActivity
 import com.tracking.hardwaretracking.feature.scan.ScanActivity
-import com.tracking.hardwaretracking.util.Constants
-import com.tracking.hardwaretracking.util.Constants.HOME_EXTRA
 import com.tracking.hardwaretracking.util.ext.gone
-import com.tracking.hardwaretracking.util.ext.parcelable
 import com.tracking.hardwaretracking.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +31,6 @@ class MainActivity : AppCompatActivity() {
 
             CoroutineScope(Dispatchers.Main).launch {
                 dataStore.userRole.collectLatest { role ->
-                    showToast(role)
                     when (role) {
                         "user" -> binding.btnScan.gone()
                     }
@@ -48,6 +42,15 @@ class MainActivity : AppCompatActivity() {
             }
             btnTakeHardware.setOnClickListener {
                 startActivity(Intent(this@MainActivity, ListBarangActivity::class.java))
+            }
+            btnLogout.setOnClickListener {
+                CoroutineScope(Dispatchers.Main).launch {
+                    dataStore.clearUserRole()
+                    dataStore.clearUserToken()
+                    dataStore.clearUserName()
+                    startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+                    finishAffinity()
+                }
             }
         }
     }

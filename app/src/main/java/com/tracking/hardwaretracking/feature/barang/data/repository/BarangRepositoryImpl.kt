@@ -69,6 +69,31 @@ class BarangRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getDetailBarang(qrcode: String): Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>> {
+        return flow {
+            try {
+                val response = barangService.getDetailBarang(qrcode)
+                if (response.isSuccessful) {
+                    val body = response.body()!!
+                    val getBarang = body.data.let { it!!.toDomain() }
+                    emit(BaseResult.Success(getBarang))
+                } else {
+                    val errorResponse = parseErrorResponse(response)
+                    emit(BaseResult.Error(errorResponse))
+                }
+            }catch (error : Exception) {
+                emit(
+                    BaseResult.Error(
+                        WrappedResponse(
+                            message = error.message ?: "Error Occured",
+                            null
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     private fun parseErrorResponse(response: Response<*>): WrappedResponse<BarangDto> {
         val type = object : TypeToken<WrappedResponse<BarangDto>>() {}.type
         val errorBody =

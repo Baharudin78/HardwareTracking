@@ -52,6 +52,18 @@ class TokenDataStore @Inject constructor(val context: Context) {
         }
     }
 
+    suspend fun clearUserRole() {
+        dataStore.edit { preferences ->
+            preferences.remove(USER_ROLE)
+        }
+    }
+
+    suspend fun clearUserName() {
+        dataStore.edit { preferences ->
+            preferences.remove(USER_NAME)
+        }
+    }
+
     val userTokenFlow: Flow<String> = dataStore.data
         .map { preferences ->
             preferences[USER_TOKEN_KEY] ?: ""

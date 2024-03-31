@@ -34,8 +34,8 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityLoginBinding
-    private val viewModel : LoginViewModel by viewModels()
+    private lateinit var binding: ActivityLoginBinding
+    private val viewModel: LoginViewModel by viewModels()
 
     @Inject
     lateinit var dataStore: TokenDataStore
@@ -145,18 +145,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private suspend fun goToMainActivity() {
-        dataStore.userTokenFlow.collect { token ->
-            val user = decodeJWT(token)
-            showToast("login : $user")
-            Log.d("TRACKTING", " GO TO MAINMENU : $user")
-            startActivity(
-                Intent(this@LoginActivity, MainActivity::class.java)
-                    .putExtra(HOME_EXTRA, user)
-            )
-
-            finish()
-        }
+    private fun goToMainActivity() {
+        startActivity(
+            Intent(this@LoginActivity, MainActivity::class.java)
+        )
+        finish()
     }
 
 

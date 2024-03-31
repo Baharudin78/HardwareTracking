@@ -23,7 +23,7 @@
         android:layout_height="wrap_content"
         android:textSize="17sp"
         android:textColor="@color/white"
-        android:id="@+id/tvQrCode"
+        android:id="@+id/tvQrCodeEncrypted"
         app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
@@ -35,8 +35,56 @@
         android:layout_height="wrap_content"
         android:textSize="17sp"
         android:textColor="@color/white"
-        android:id="@+id/tvDetail"
-        app:layout_constraintTop_toBottomOf="@+id/tvQrCode"
+        android:id="@+id/tvQrCodeDecrypted"
+        app:layout_constraintTop_toBottomOf="@+id/tvQrCodeEncrypted"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="TRDTSFS"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/white"
+        android:id="@+id/tvNamaBarang"
+        app:layout_constraintTop_toBottomOf="@+id/tvQrCodeDecrypted"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="TRDTSFS"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/white"
+        android:id="@+id/tvResponsibleName"
+        app:layout_constraintTop_toBottomOf="@+id/tvNamaBarang"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="TRDTSFS"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/white"
+        android:id="@+id/tvLocation"
+        app:layout_constraintTop_toBottomOf="@+id/tvResponsibleName"
+        app:layout_constraintStart_toStartOf="parent"
+        tools:text="TRDTSFS"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/white"
+        android:id="@+id/tvDescLocation"
+        app:layout_constraintTop_toBottomOf="@+id/tvLocation"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
         android:layout_marginTop="16dp"

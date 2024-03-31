@@ -20,4 +20,9 @@ interface BarangService {
         @Query("id") id : String,
         @Body request : UpdateBarangRequest
     ) : Response<WrappedResponse<BarangDto>>
+
+    @GET("services/barang")
+    suspend fun getDetailBarang(
+        @Query("qrcode") qrcode : String
+    ) : Response<WrappedResponse<BarangDto>>
 }

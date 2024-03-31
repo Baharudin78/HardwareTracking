@@ -56,7 +56,6 @@ class HardwareActivity : AppCompatActivity() {
     private lateinit var binding : ActivityHardwareBinding
     private lateinit var locationHelper: LocationHelper
     private var adminUserSelected : String? = null
-    private var userRole : String? = null
     private val viewModel : HardwareViewModel by viewModels()
 
     val barang by lazy {
@@ -86,40 +85,6 @@ class HardwareActivity : AppCompatActivity() {
         initViews()
         initListener()
         observe()
-        observeUsers()
-
-        CoroutineScope(Dispatchers.Main).launch {
-            dataStore.userName.collectLatest { user ->
-                binding.etUser.setText(user)
-            }
-            dataStore.userRole.collectLatest { role ->
-                when (role) {
-                    "admin" -> {
-                        binding.nameInput.gone()
-                    }
-                    "user" -> {
-                        binding.etUser.isEnabled = false
-                        binding.nameInput.visible()
-                    }
-                }
-            }
-        }
-    }
-    private fun showDropdownUser(users: List<UserDomain>) {
-        val userNames = users.map { it.name ?: "" }
-        val adapter = ArrayAdapter(this@HardwareActivity, android.R.layout.simple_spinner_dropdown_item, userNames)
-        binding.spinner.adapter = adapter
-
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedUser = users[position]
-                adminUserSelected = selectedUser.name
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Handle nothing selected if needed
-            }
-        }
     }
 
     private fun observe(){
@@ -163,10 +128,67 @@ class HardwareActivity : AppCompatActivity() {
         startActivity(intent)
         finishAffinity()
     }
+
     private fun initViews() {
+        CoroutineScope(Dispatchers.Main).launch {
+            try {
+                dataStore.userRole.collectLatest { role ->
+                    when (role) {
+                        "admin" -> {
+                            initAdminMenu()
+                        }
+                        "user" -> {
+                            initUserMenu()
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e("initViews", "Error collecting DataStore values: ${e.message}")
+            }
+        }
+        binding.tvNamaBarang.text = "Nama Barang : ${barang?.name}"
+        binding.tvQrCode.text = "Qrcode : ${barang?.qrcode}"
+        binding.tvCurrentLocation.text = "Lokasi Sekarang : ${barang?.currentLocation}"
+        binding.tvDescLocation.text = "Lokasi Deskripsi : ${barang?.descLocation}"
+        binding.tvResponsibleperson.text = "Pemegang saat ini : ${barang?.responsiblePerson}"
+
+    }
+
+
+    private fun initAdminMenu() {
         with(binding) {
-            tvNamaBarang.text = barang?.name
-            tvQrCode.text = barang?.qrcode
+            nameInput.gone()
+            spinner.visible()
+            observeUsers()
+        }
+    }
+    private fun initUserMenu() {
+        with(binding) {
+            spinner.gone()
+            nameInput.visible()
+            etUser.isEnabled = false
+            CoroutineScope(Dispatchers.Main).launch {
+                dataStore.userName.collectLatest { user ->
+                    binding.etUser.setText(user)
+                }
+            }
+        }
+    }
+
+    private fun showDropdownUser(users: List<UserDomain>) {
+        val userNames = users.map { it.name ?: "" }
+        val adapter = ArrayAdapter(this@HardwareActivity, android.R.layout.simple_spinner_dropdown_item, userNames)
+        binding.spinner.adapter = adapter
+
+        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                val selectedUser = users[position]
+                adminUserSelected = selectedUser.name
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                // Handle nothing selected if needed
+            }
         }
     }
 
@@ -176,9 +198,6 @@ class HardwareActivity : AppCompatActivity() {
                 CoroutineScope(Dispatchers.Main).launch {
                     dataStore.userRole.collectLatest { role ->
                         val request = if (role == "admin") {
-                            Log.d("HARDWARE asu bansatt", "admin")
-                            Log.d("HARDWARE asu bansatt", "admin user : $adminUserSelected")
-
                             UpdateBarangRequest(
                                 name = tvNamaBarang.text.toString(),
                                 qrcode = tvQrCode.text.toString(),

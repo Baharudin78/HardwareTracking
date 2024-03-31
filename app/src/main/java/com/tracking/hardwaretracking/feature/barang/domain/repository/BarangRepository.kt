@@ -11,4 +11,5 @@ import kotlinx.coroutines.flow.Flow
 interface BarangRepository {
     suspend fun getListBarang() : Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>>
     suspend fun updateBarang(id : String, request : UpdateBarangRequest) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>>
+    suspend fun getDetailBarang(qrcode : String) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>>
 }
