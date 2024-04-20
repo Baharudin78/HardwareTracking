@@ -4,19 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/dark_blue_primary"
+    android:background="@color/neutral_80"
     tools:context=".feature.scan.ScanActivity">
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnScanBarcode"
         android:layout_width="150dp"
         android:layout_height="70dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_marginTop="50dp"
+        android:backgroundTint="@color/red_primary"
+        android:fontFamily="@font/roboto_slab"
         android:text="Scan"
-        android:id="@+id/btnScanBarcode"
-        android:backgroundTint="@color/red_primary"/>
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -27,6 +29,7 @@
         app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
+        android:fontFamily="@font/roboto_slab"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -39,6 +42,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQrCodeEncrypted"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
+        android:fontFamily="@font/roboto_slab"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -51,6 +55,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQrCodeDecrypted"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
+        android:fontFamily="@font/roboto_slab"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -63,6 +68,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvNamaBarang"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
+        android:fontFamily="@font/roboto_slab"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -75,6 +81,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvResponsibleName"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
+        android:fontFamily="@font/roboto_slab"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -87,6 +94,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvLocation"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
+        android:fontFamily="@font/roboto_slab"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

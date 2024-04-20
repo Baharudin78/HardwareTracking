@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.databinding.ActivityMainBinding
 import com.tracking.hardwaretracking.feature.barang.presentation.ListBarangActivity
+import com.tracking.hardwaretracking.feature.barang.presentation.TakeHardwareActivity
 import com.tracking.hardwaretracking.feature.login.presentation.LoginActivity
 import com.tracking.hardwaretracking.feature.scan.ScanActivity
 import com.tracking.hardwaretracking.util.ext.gone
@@ -41,7 +42,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
             btnTakeHardware.setOnClickListener {
-                startActivity(Intent(this@MainActivity, ListBarangActivity::class.java))
+                startActivity(Intent(this@MainActivity, TakeHardwareActivity::class.java))
             }
             btnLogout.setOnClickListener {
                 CoroutineScope(Dispatchers.Main).launch {

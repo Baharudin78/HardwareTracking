@@ -70,10 +70,8 @@ class HardwareActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         locationHelper = LocationHelper(this)
-        binding.etCurrentLocation.isEnabled = false
         locationHelper.getCurrentLocation(object : LocationHelper.LocationListener {
             override fun onLocationReceived(city: String?) {
-                binding.etCurrentLocation.isEnabled = false
                 binding.etCurrentLocation.setText(city)
             }
 
@@ -85,6 +83,11 @@ class HardwareActivity : AppCompatActivity() {
         initViews()
         initListener()
         observe()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finish()
     }
 
     private fun observe(){
@@ -153,6 +156,7 @@ class HardwareActivity : AppCompatActivity() {
         binding.tvResponsibleperson.text = "Pemegang saat ini : ${barang?.responsiblePerson}"
 
     }
+
 
 
     private fun initAdminMenu() {
