@@ -9,11 +9,11 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
-    <string name="header_login">Sign in</string>
+    <string name="header_login">Log in</string>
     <string name="header_desc_login">Login to your account to access all the feature.</string>
     <string name="hint_login_email_edit_text">Enter your email</string>
     <string name="hint_login_password_edit_text">Password</string>
-    <string name="button_text_login">Sign in</string>
+    <string name="button_text_login">Log in</string>
     <string name="button_text_dont_have_account">I don\'t have an account</string>
     <string name="button_text_ok">Ok</string>
     <string name="error_email_not_valid">Email is not valid</string>
