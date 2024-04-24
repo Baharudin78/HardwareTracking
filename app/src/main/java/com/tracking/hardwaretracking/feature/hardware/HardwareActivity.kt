@@ -203,8 +203,6 @@ class HardwareActivity : AppCompatActivity() {
                     dataStore.userRole.collectLatest { role ->
                         val request = if (role == "admin") {
                             UpdateBarangRequest(
-//                                name = tvNamaBarang.text.toString(),
-//                                qrcode = tvQrCode.text.toString(),
                                 responsiblePerson = adminUserSelected,
                                 currentLocation = etCurrentLocation.text.toString(),
                                 descLocation = etDescriptionLocation.text.toString(),
@@ -212,8 +210,6 @@ class HardwareActivity : AppCompatActivity() {
                         } else {
                             Log.d("HARDWARE asu bansatt", "userr")
                             UpdateBarangRequest(
-//                                name = tvNamaBarang.text.toString(),
-//                                qrcode = tvQrCode.text.toString(),
                                 responsiblePerson = etUser.text.toString(),
                                 currentLocation = etCurrentLocation.text.toString(),
                                 descLocation = etDescriptionLocation.text.toString(),
