@@ -132,7 +132,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="15dp"
                 android:layout_marginEnd="16dp"
-                android:fontFamily="@font/roboto_slab_thin"
+                android:fontFamily="@font/roboto_slab_bold"
                 android:text="Silahkan Edit Barang : "
                 android:textColor="@color/white"
                 android:textSize="20sp"
@@ -195,6 +195,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:inputType="text"
+                    android:hint="Lokasi Saat Ini"
                     android:fontFamily="@font/roboto_slab_thin"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white"
@@ -215,6 +216,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     android:layout_width="match_parent"
                     android:inputType="text"
+                    android:hint="Deskripsi Lokasi"
                     android:fontFamily="@font/roboto_slab_thin"
                     android:textColor="@color/white"
                     android:textColorHint="@color/white"
@@ -223,19 +225,19 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
-                android:layout_width="match_parent"
                 android:id="@+id/btnSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="30dp"
+                android:layout_marginEnd="16dp"
                 android:backgroundTint="@color/red_primary"
+                android:fontFamily="@font/roboto_slab_bold"
                 android:text="Submit"
                 android:textColor="@color/white"
-                android:fontFamily="@font/roboto_slab_thin"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/description_location"
-                android:layout_marginTop="30dp"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginStart="16dp"
-                android:layout_marginEnd="16dp"/>
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/description_location" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 

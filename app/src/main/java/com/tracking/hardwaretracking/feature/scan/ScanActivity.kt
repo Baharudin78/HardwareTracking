@@ -30,8 +30,8 @@ class ScanActivity : AppCompatActivity() {
             if (result.resultCode == Activity.RESULT_OK) {
                 val dataMsg = result.data?.getParcelableExtra<BarangDomain>(CameraActivity.CAMERA_RESULT)
                 binding.tvQrCodeEncrypted.text = "Encrypted QR : ${dataMsg?.encryptQrcode}"
-                binding.tvQrCodeDecrypted.text = dataMsg?.qrcode
-                binding.tvNamaBarang.text = dataMsg?.name
+                binding.tvQrCodeDecrypted.text = "QrCode : ${dataMsg?.qrcode}"
+                binding.tvNamaBarang.text = "Nama Barang : ${dataMsg?.name}"
                 binding.tvResponsibleName.text = "Responsible Name : ${dataMsg?.responsiblePerson}"
                 binding.tvLocation.text = "Location : ${dataMsg?.currentLocation}"
                 binding.tvDescLocation.text = "Desc Location : ${dataMsg?.descLocation}"
