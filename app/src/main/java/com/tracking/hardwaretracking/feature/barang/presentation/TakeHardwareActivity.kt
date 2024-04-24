@@ -35,6 +35,7 @@ import com.tracking.hardwaretracking.util.ext.showToast
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import android.util.Base64
 
 @AndroidEntryPoint
 class TakeHardwareActivity : AppCompatActivity() {
@@ -75,7 +76,11 @@ class TakeHardwareActivity : AppCompatActivity() {
             decodeCallback = DecodeCallback {
                 runOnUiThread {
                     try {
-                        viewModel.getBarcodeProduk(it.text)
+                        Log.w("QRCODEE","encript : ${it.text}")
+                        decryptBase64(it.text)?.let { texy ->
+                            Log.w("QRCODEE","decript : $texy")
+                            viewModel.getBarcodeProduk(texy)
+                        }
                     }catch (e : Exception) {
                         Log.w("ajak","ahsdj")
                         showToast("Produk belum ada")
@@ -141,6 +146,11 @@ class TakeHardwareActivity : AppCompatActivity() {
     override fun onPause() {
         codeScanner.releaseResources()
         super.onPause()
+    }
+
+    fun decryptBase64(encodedString: String?): String? {
+        val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+        return decodedBytes.toString(Charsets.UTF_8)
     }
 
     companion object {

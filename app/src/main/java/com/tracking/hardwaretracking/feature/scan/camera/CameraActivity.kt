@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -32,10 +33,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
+
 @AndroidEntryPoint
 class CameraActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityCameraBinding
-    private val viewModel : ScanViewModel by viewModels()
+    private lateinit var binding: ActivityCameraBinding
+    private val viewModel: ScanViewModel by viewModels()
     private lateinit var codeScanner: CodeScanner
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,19 +74,25 @@ class CameraActivity : AppCompatActivity() {
             decodeCallback = DecodeCallback {
                 runOnUiThread {
                     try {
-                        viewModel.getBarcodeProduk(it.text)
-                    }catch (e : Exception) {
-                        Log.w("ajak","ahsdj")
+                        Log.w("QRCODEE","encript : ${it.text}")
+                        decryptBase64(it.text)?.let { texy ->
+                            Log.w("QRCODEE", "decript : $texy")
+                            viewModel.getBarcodeProduk(texy)
+                        }
+                    } catch (e: Exception) {
+                        Log.w("ajak", "ahsdj")
                         showToast("Produk belum ada")
                     }
                 }
             }
             errorCallback = ErrorCallback {
                 runOnUiThread {
-                    Log.w("ajak","ahsdj")
+                    Log.w("ajak", "ahsdj")
                     showToast("Produk belum ada")
-                    Toast.makeText(this@CameraActivity, "Camera initialization error: ${it.message}",
-                        Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@CameraActivity, "Camera initialization error: ${it.message}",
+                        Toast.LENGTH_LONG
+                    ).show()
                 }
             }
             binding.scannerView.setOnClickListener {
@@ -101,14 +109,15 @@ class CameraActivity : AppCompatActivity() {
             }
             .launchIn(lifecycleScope)
     }
+
     private fun observeVMState() {
         viewModel.mState.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).onEach { state ->
             handleStateChange(state)
         }.launchIn(lifecycleScope)
     }
 
-    private fun handleStateChange(state : BarcodeByBarcodeState) {
-        when(state) {
+    private fun handleStateChange(state: BarcodeByBarcodeState) {
+        when (state) {
             is BarcodeByBarcodeState.ShowToast -> showToast(state.message)
             is BarcodeByBarcodeState.Error -> handleError(state.rawResponse)
             is BarcodeByBarcodeState.Success -> handleproduk(state.barcode)
@@ -118,15 +127,17 @@ class CameraActivity : AppCompatActivity() {
 
     private fun handleError(httpResponse: WrappedResponse<BarangDto>) {
         httpResponse.message?.let {
-            showGenericAlertDialog(it) }
+            showGenericAlertDialog(it)
+        }
     }
 
-    private fun handleproduk(barangDomain : BarangDomain) {
+    private fun handleproduk(barangDomain: BarangDomain) {
         val intent = Intent()
         intent.putExtra(CAMERA_RESULT, barangDomain)
         setResult(Activity.RESULT_OK, intent)
         finish()
     }
+
     private fun reScan() {
         codeScanner.startPreview()
 
@@ -141,6 +152,11 @@ class CameraActivity : AppCompatActivity() {
     override fun onPause() {
         codeScanner.releaseResources()
         super.onPause()
+    }
+
+    fun decryptBase64(encodedString: String?): String? {
+        val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+        return decodedBytes.toString(Charsets.UTF_8)
     }
 
     companion object {
