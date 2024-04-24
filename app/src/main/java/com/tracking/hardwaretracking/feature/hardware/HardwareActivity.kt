@@ -149,8 +149,8 @@ class HardwareActivity : AppCompatActivity() {
                 Log.e("initViews", "Error collecting DataStore values: ${e.message}")
             }
         }
-        binding.tvNamaBarang.text = "Nama Barang : ${barang?.name}"
-        binding.tvQrCode.text = "Qrcode : ${barang?.qrcode}"
+        binding.tvNamaBarang.text = barang?.name
+        binding.tvQrCode.text = barang?.qrcode
         binding.tvCurrentLocation.text = "Lokasi Sekarang : ${barang?.currentLocation}"
         binding.tvDescLocation.text = "Lokasi Deskripsi : ${barang?.descLocation}"
         binding.tvResponsibleperson.text = "Pemegang saat ini : ${barang?.responsiblePerson}"
@@ -203,8 +203,8 @@ class HardwareActivity : AppCompatActivity() {
                     dataStore.userRole.collectLatest { role ->
                         val request = if (role == "admin") {
                             UpdateBarangRequest(
-                                name = tvNamaBarang.text.toString(),
-                                qrcode = tvQrCode.text.toString(),
+//                                name = tvNamaBarang.text.toString(),
+//                                qrcode = tvQrCode.text.toString(),
                                 responsiblePerson = adminUserSelected,
                                 currentLocation = etCurrentLocation.text.toString(),
                                 descLocation = etDescriptionLocation.text.toString(),
@@ -212,8 +212,8 @@ class HardwareActivity : AppCompatActivity() {
                         } else {
                             Log.d("HARDWARE asu bansatt", "userr")
                             UpdateBarangRequest(
-                                name = tvNamaBarang.text.toString(),
-                                qrcode = tvQrCode.text.toString(),
+//                                name = tvNamaBarang.text.toString(),
+//                                qrcode = tvQrCode.text.toString(),
                                 responsiblePerson = etUser.text.toString(),
                                 currentLocation = etCurrentLocation.text.toString(),
                                 descLocation = etDescriptionLocation.text.toString(),
