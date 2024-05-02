@@ -21,6 +21,7 @@ import com.tracking.hardwaretracking.util.Constants.HOME_EXTRA
 import com.tracking.hardwaretracking.util.Constants.MIN_PASSWORD_LENGTH
 import com.tracking.hardwaretracking.util.ext.gone
 import com.tracking.hardwaretracking.util.ext.isEmail
+import com.tracking.hardwaretracking.util.ext.setSafeOnClickListener
 import com.tracking.hardwaretracking.util.ext.showGenericAlertDialog
 import com.tracking.hardwaretracking.util.ext.showToast
 import com.tracking.hardwaretracking.util.ext.visible
@@ -49,7 +50,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun login() {
-        binding.loginButton.setOnClickListener {
+        binding.loginButton.setSafeOnClickListener {
             val username = binding.emailEditText.text.toString().trim()
             val password = binding.passwordEditText.text.toString().trim()
             if (validate(username, password)) {
@@ -60,9 +61,9 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun validate(email: String, password: String): Boolean {
+    private fun validate(username: String, password: String): Boolean {
         resetAllInputError()
-        if (!email.isEmail()) {
+        if (!username.isNotEmpty()) {
             setEmailError(getString(R.string.error_email_not_valid))
             return false
         }
@@ -119,29 +120,37 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private suspend fun handleSuccessLogin(loginEntity: LoginDomain) {
-        loginEntity.token.takeIf { it.isNotEmpty() }?.let { token ->
-            coroutineScope {
-                launch {
-                    dataStore.saveUserToken(token)
-                }
+        when (loginEntity.role) {
+            "super admin" -> {
+                showToast("Super admin tidak bisa login")
             }
-        }
-        loginEntity.role.takeIf { it.isNotEmpty() }?.let { role ->
-            coroutineScope {
-                launch {
-                    dataStore.saveRoleLogin(role)
-                }
-            }
-        }
-        loginEntity.name.takeIf { it.isNotEmpty() }?.let { name ->
-            coroutineScope {
-                launch {
-                    dataStore.saveNameUser(name)
-                }
-            }
-        }
 
-        goToMainActivity()
+            else -> {
+                loginEntity.token.takeIf { it.isNotEmpty() }?.let { token ->
+                    coroutineScope {
+                        launch {
+                            dataStore.saveUserToken(token)
+                        }
+                    }
+                }
+                loginEntity.role.takeIf { it.isNotEmpty() }?.let { role ->
+                    coroutineScope {
+                        launch {
+                            dataStore.saveRoleLogin(role)
+                        }
+                    }
+                }
+                loginEntity.name.takeIf { it.isNotEmpty() }?.let { name ->
+                    coroutineScope {
+                        launch {
+                            dataStore.saveNameUser(name)
+                        }
+                    }
+                }
+
+                goToMainActivity()
+            }
+        }
     }
 
 

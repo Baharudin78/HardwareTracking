@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/neutral_80"
+    android:background="@color/black"
     tools:context=".feature.scan.ScanActivity">
 
     <com.google.android.material.button.MaterialButton
