@@ -3,6 +3,7 @@ package com.tracking.hardwaretracking.feature.barang.data.api
 import com.tracking.hardwaretracking.core.WrappedListResponse
 import com.tracking.hardwaretracking.core.WrappedResponse
 import com.tracking.hardwaretracking.feature.barang.data.dto.BarangDto
+import com.tracking.hardwaretracking.feature.barang.data.dto.LogDto
 import com.tracking.hardwaretracking.feature.barang.domain.request.UpdateBarangRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -25,4 +26,7 @@ interface BarangService {
     suspend fun getDetailBarang(
         @Query("qrcode") qrcode : String
     ) : Response<WrappedResponse<BarangDto>>
+
+    @GET("services/logs")
+    suspend fun getLog() : Response<WrappedListResponse<LogDto>>
 }

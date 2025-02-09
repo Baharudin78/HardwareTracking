@@ -7,8 +7,11 @@ import com.tracking.hardwaretracking.core.WrappedListResponse
 import com.tracking.hardwaretracking.core.WrappedResponse
 import com.tracking.hardwaretracking.feature.barang.data.api.BarangService
 import com.tracking.hardwaretracking.feature.barang.data.dto.BarangDto
+import com.tracking.hardwaretracking.feature.barang.data.dto.LogDto
 import com.tracking.hardwaretracking.feature.barang.data.mapper.toDomain
+import com.tracking.hardwaretracking.feature.barang.data.mapper.toLogDomain
 import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
+import com.tracking.hardwaretracking.feature.barang.domain.model.LogDomain
 import com.tracking.hardwaretracking.feature.barang.domain.repository.BarangRepository
 import com.tracking.hardwaretracking.feature.barang.domain.request.UpdateBarangRequest
 import com.tracking.hardwaretracking.feature.login.data.dto.LoginDto
@@ -25,9 +28,9 @@ class BarangRepositoryImpl @Inject constructor(
         return flow {
             val response = barangService.getListBarang()
             if (response.isSuccessful){
-                val body = response.body()!!
+                val body = response.body()
                 val barang = mutableListOf<BarangDomain>()
-                body.data?.forEach { menuResponse ->
+                body?.data?.forEach { menuResponse ->
                     barang.add(
                         menuResponse.toDomain()
                     )
@@ -99,5 +102,25 @@ class BarangRepositoryImpl @Inject constructor(
         val errorBody =
             response.errorBody() ?: return WrappedResponse(message = "Unknown error occurred", null)
         return Gson().fromJson(errorBody.charStream(), type)!!
+    }
+
+    override suspend fun getLog(): Flow<BaseResult<List<LogDomain>, WrappedListResponse<LogDto>>> {
+        return flow {
+            val response = barangService.getLog()
+            if (response.isSuccessful){
+                val body = response.body()
+                val log = mutableListOf<LogDomain>()
+                body?.data?.forEach { logResponse ->
+                    log.add(
+                        logResponse.toLogDomain()
+                    )
+                }
+                emit(BaseResult.Success(log))
+            }else{
+                val type = object : TypeToken<WrappedListResponse<LogDto>>(){}.type
+                val err = Gson().fromJson<WrappedListResponse<LogDto>>(response.errorBody()?.charStream(), type)
+                emit(BaseResult.Error(err))
+            }
+        }
     }
 }

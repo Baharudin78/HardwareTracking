@@ -206,6 +206,7 @@ class HardwareActivity : AppCompatActivity() {
                                 responsiblePerson = adminUserSelected,
                                 currentLocation = etCurrentLocation.text.toString(),
                                 descLocation = etDescriptionLocation.text.toString(),
+                                qrcode = barang?.qrcode
                             )
                         } else {
                             Log.d("HARDWARE asu bansatt", "userr")
@@ -213,6 +214,7 @@ class HardwareActivity : AppCompatActivity() {
                                 responsiblePerson = etUser.text.toString(),
                                 currentLocation = etCurrentLocation.text.toString(),
                                 descLocation = etDescriptionLocation.text.toString(),
+                                qrcode = barang?.qrcode
                             )
                         }
                         viewModel.updateProduct(barang?.id.orEmpty(), request)

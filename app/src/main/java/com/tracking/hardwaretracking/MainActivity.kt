@@ -7,6 +7,7 @@ import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.databinding.ActivityMainBinding
 import com.tracking.hardwaretracking.feature.barang.presentation.ListBarangActivity
 import com.tracking.hardwaretracking.feature.barang.presentation.TakeHardwareActivity
+import com.tracking.hardwaretracking.feature.login.domain.model.LoginDomain
 import com.tracking.hardwaretracking.feature.login.presentation.LoginActivity
 import com.tracking.hardwaretracking.feature.scan.ScanActivity
 import com.tracking.hardwaretracking.util.ext.gone
@@ -23,25 +24,27 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
     @Inject
     lateinit var dataStore : TokenDataStore
+    private var loginEntity : LoginDomain? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        loginEntity = intent.getParcelableExtra("USER") as LoginDomain?
         with(binding) {
-
+            tvUsername.text = "Hello, ${loginEntity?.name}"
             CoroutineScope(Dispatchers.Main).launch {
                 dataStore.userRole.collectLatest { role ->
                     when (role) {
-                        "user" -> binding.btnScan.gone()
+                        "user" -> binding.llScan.gone()
                     }
                 }
             }
-            btnScan.setOnClickListener {
+            llScan.setOnClickListener {
                 val intent = Intent(this@MainActivity, ScanActivity::class.java)
                 startActivity(intent)
             }
-            btnTakeHardware.setOnClickListener {
+            llTakeOver.setOnClickListener {
                 startActivity(Intent(this@MainActivity, TakeHardwareActivity::class.java))
             }
             btnLogout.setOnClickListener {
@@ -55,6 +58,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
 
 
 }

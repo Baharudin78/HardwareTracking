@@ -148,15 +148,16 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
 
-                goToMainActivity()
+                goToMainActivity(loginEntity)
             }
         }
     }
 
 
-    private fun goToMainActivity() {
+    private fun goToMainActivity(loginEntity: LoginDomain) {
         startActivity(
             Intent(this@LoginActivity, MainActivity::class.java)
+                .putExtra("USER",loginEntity)
         )
         finish()
     }

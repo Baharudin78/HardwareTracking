@@ -20,4 +20,18 @@ data class BarangDto(
     val descLocation: String?,
     @SerializedName("encrypt_qrcode")
     val encryptQrcode: String?,
+    @SerializedName("category_id")
+    val categoryId: Int?,
+    @SerializedName("deletedAt")
+    val deletedAt: Any?,
+    @SerializedName("hak_milik")
+    val hakMilik: String?,
+    @SerializedName("responsible_person_id")
+    val responsiblePersonId: Int?,
+    @SerializedName("role")
+    val role: String?,
+    @SerializedName("status")
+    val status: String?,
+    @SerializedName("updatedAt")
+    val updatedAt: String?
 )

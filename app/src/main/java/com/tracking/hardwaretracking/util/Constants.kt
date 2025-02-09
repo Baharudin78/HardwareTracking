@@ -1,7 +1,8 @@
 package com.tracking.hardwaretracking.util
 
 object Constants {
-    const val BASE_URL = "https://tracking-apps.vercel.app/api/"
+    //const val BASE_URL = "https://backoffice.lifestoneindonesia.com/api/"
+    const val BASE_URL = "https://tracking-apps.netlify.app/api/"
 
     //Additional
     const val ROLE_EMPTY = "Role Jangan Kosong"

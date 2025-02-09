@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tracking.hardwaretracking.core.BaseResult
 import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
+import com.tracking.hardwaretracking.feature.barang.domain.model.LogDomain
 import com.tracking.hardwaretracking.feature.barang.domain.usecase.BarangUseCase
+import com.tracking.hardwaretracking.feature.barang.domain.usecase.GetLogUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BarangViewModel @Inject constructor(
-    private val barangUseCase : BarangUseCase
+    private val barangUseCase : BarangUseCase,
+    private val getLogUseCase: GetLogUseCase
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<GetBarangViewState>(GetBarangViewState.Init)
@@ -38,6 +41,7 @@ class BarangViewModel @Inject constructor(
 
     init {
         fetchBarang()
+        fetchLogBarang()
     }
 
     fun fetchBarang() {
@@ -55,6 +59,33 @@ class BarangViewModel @Inject constructor(
                     when (result) {
                         is BaseResult.Success -> {
                             _barang.value = result.data
+                        }
+                        is BaseResult.Error -> {
+                            showToast(result.rawResponse.message ?: "Error Occured")
+                        }
+                    }
+                }
+        }
+    }
+
+    private val _log = MutableStateFlow<List<LogDomain>>(emptyList())
+    val log: StateFlow<List<LogDomain>> get() = _log
+
+    fun fetchLogBarang() {
+        viewModelScope.launch {
+            getLogUseCase.getLog()
+                .onStart {
+                    setLoading()
+                }
+                .catch { exception ->
+                    hideLoading()
+                    showToast(exception.message ?: "Error Occured")
+                }
+                .collect { result ->
+                    hideLoading()
+                    when (result) {
+                        is BaseResult.Success -> {
+                            _log.value = result.data
                         }
                         is BaseResult.Error -> {
                             showToast(result.rawResponse.message ?: "Error Occured")

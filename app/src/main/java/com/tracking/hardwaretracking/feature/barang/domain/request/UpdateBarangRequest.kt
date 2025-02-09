@@ -9,5 +9,7 @@ data class UpdateBarangRequest(
     @SerializedName("current_location")
     val currentLocation : String?,
     @SerializedName("desc_location")
-    val descLocation : String?
+    val descLocation : String?,
+    @SerializedName("qrcode")
+    val qrcode : String?,
 )
