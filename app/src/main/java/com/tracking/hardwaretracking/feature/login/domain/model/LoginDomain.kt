@@ -9,5 +9,5 @@ data class LoginDomain(
     val role : String,
     val name : String,
     val email : String,
-    val id : String
+    val id : Int
 ) :Parcelable

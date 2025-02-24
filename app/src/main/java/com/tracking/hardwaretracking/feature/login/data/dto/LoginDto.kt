@@ -14,5 +14,5 @@ data class LoginDto(
     @SerializedName("email")
     val email : String?,
     @SerializedName("id")
-    val id : String?,
+    val id : Int?,
 )

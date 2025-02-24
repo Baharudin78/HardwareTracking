@@ -33,7 +33,7 @@ class BarangAdapter(
                 tvCurrentLoc.text = "Lokasi : ${barangDomain.currentLocation}"
                 tvQrCode.text = "EncryptedQR : ${barangDomain.qrcode}"
                 tvNamaBarang.text = "Nama barang : ${barangDomain.name}"
-                tvNamaPemegang.text = "PIC :${barangDomain.responsiblePerson}"
+                tvNamaPemegang.text = "PIC :${barangDomain.responsiblePerson?.username}"
                 root.setOnClickListener {
                     onClickListener?.onClick(barangDomain)
                 }

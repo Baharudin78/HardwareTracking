@@ -1,11 +1,10 @@
-package com.tracking.hardwaretracking.feature.barang.presentation
+package com.tracking.hardwaretracking.feature.history
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.tracking.hardwaretracking.core.BaseResult
-import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
 import com.tracking.hardwaretracking.feature.barang.domain.model.LogDomain
-import com.tracking.hardwaretracking.feature.barang.domain.usecase.BarangUseCase
 import com.tracking.hardwaretracking.feature.barang.domain.usecase.GetLogUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,62 +12,66 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
-class BarangViewModel @Inject constructor(
-    private val barangUseCase : BarangUseCase,
-) : ViewModel() {
+class HistoryViewModel @Inject constructor(
+    private val getLogUseCase : GetLogUseCase
+) : ViewModel(){
 
-    private val _state = MutableStateFlow<GetBarangViewState>(GetBarangViewState.Init)
-    val state: StateFlow<GetBarangViewState> get() = _state
+    private val _state = MutableStateFlow<GetHistoryViewState>(GetHistoryViewState.Init)
+    val state: StateFlow<GetHistoryViewState> get() = _state
 
-    private val _barang = MutableStateFlow<List<BarangDomain>>(emptyList())
-    val barang: StateFlow<List<BarangDomain>> get() = _barang
 
     private fun setLoading() {
-        _state.value = GetBarangViewState.IsLoading(true)
+        _state.value = GetHistoryViewState.IsLoading(true)
     }
 
     private fun hideLoading() {
-        _state.value = GetBarangViewState.IsLoading(false)
+        _state.value = GetHistoryViewState.IsLoading(false)
     }
 
     private fun showToast(message: String) {
-        _state.value = GetBarangViewState.ShowToast(message)
+        _state.value = GetHistoryViewState.ShowToast(message)
     }
+    private val _log = MutableStateFlow<List<LogDomain>>(emptyList())
+    val log: StateFlow<List<LogDomain>> get() = _log
+
 
     init {
-        fetchBarang()
+      //  fetchLogBarang()
     }
-
-    fun fetchBarang(userId : Int? = null) {
+    fun fetchLogBarang() {
         viewModelScope.launch {
-            barangUseCase.getBarang(userId)
+            getLogUseCase.getLog()
                 .onStart {
                     setLoading()
                 }
                 .catch { exception ->
                     hideLoading()
+                    Log.d("TESTING", "ERROR ${exception.message}")
+                    Timber.d("${this::class.simpleName} TESTING, error ${exception.message}")
                     showToast(exception.message ?: "Error Occured")
                 }
                 .collect { result ->
                     hideLoading()
                     when (result) {
                         is BaseResult.Success -> {
-                            _barang.value = result.data
+                            Log.d("TESTING"," result ${result.data}")
+                            _log.value = result.data
                         }
                         is BaseResult.Error -> {
+                            Log.d("TESINT", "ERROR : ${result.rawResponse.message}")
                             showToast(result.rawResponse.message ?: "Error Occured")
                         }
                     }
                 }
         }
     }
-
-    sealed class GetBarangViewState {
-        object Init : GetBarangViewState()
-        data class IsLoading(val isLoading: Boolean) : GetBarangViewState()
-        data class ShowToast(val message: String) : GetBarangViewState()
+    sealed class GetHistoryViewState {
+        object Init : GetHistoryViewState()
+        data class IsLoading(val isLoading: Boolean) : GetHistoryViewState()
+        data class ShowToast(val message: String) : GetHistoryViewState()
     }
 }

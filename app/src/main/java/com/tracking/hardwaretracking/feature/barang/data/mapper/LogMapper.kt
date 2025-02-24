@@ -10,17 +10,16 @@ fun LogDto.toLogDomain() : LogDomain {
         barangId = barangId ?: 0,
         createdAt = createdAt.orEmpty(),
         id = id ?: 0,
-        locationFrom = locationFrom.orEmpty(),
+        locationFrom = locationFrom,
         locationTo = locationTo.orEmpty(),
         note = note.orEmpty(),
-        responsibleFrom = responsibleFrom.orEmpty(),
+        //responsibleFrom = responsibleFrom.orEmpty(),
         responsibleFromId = responsibleFromId.orEmpty(),
-        responsibleTo = responsibleTo.orEmpty(),
-        responsibleToId = responsibleToId.orEmpty(),
+       // responsibleTo = responsibleTo.orEmpty(),
         role = role.orEmpty(),
         status = status.orEmpty(),
         user = user?.toDomain(),
-        userId = userId ?: 0
-
+        userId = userId ?: 0,
+        updatedAt = updatedAt.orEmpty()
     )
 }

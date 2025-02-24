@@ -14,8 +14,6 @@ import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
 import com.tracking.hardwaretracking.feature.barang.domain.model.LogDomain
 import com.tracking.hardwaretracking.feature.barang.domain.repository.BarangRepository
 import com.tracking.hardwaretracking.feature.barang.domain.request.UpdateBarangRequest
-import com.tracking.hardwaretracking.feature.login.data.dto.LoginDto
-import com.tracking.hardwaretracking.feature.login.data.mapper.toLoginEntity
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import retrofit2.Response
@@ -24,9 +22,9 @@ import javax.inject.Inject
 class BarangRepositoryImpl @Inject constructor(
     private val barangService: BarangService
 ) : BarangRepository{
-    override suspend fun getListBarang(): Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>> {
+    override suspend fun getListBarang(userId : Int?): Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>> {
         return flow {
-            val response = barangService.getListBarang()
+            val response = barangService.getListBarang(userId)
             if (response.isSuccessful){
                 val body = response.body()
                 val barang = mutableListOf<BarangDomain>()
@@ -45,7 +43,7 @@ class BarangRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateBarang(
-        id: String,
+        id: Int,
         request: UpdateBarangRequest
     ): Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>> {
         return flow {

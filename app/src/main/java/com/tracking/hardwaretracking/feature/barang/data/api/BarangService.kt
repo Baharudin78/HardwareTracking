@@ -14,11 +14,13 @@ import retrofit2.http.Query
 interface BarangService {
 
     @GET("services/barang")
-    suspend fun getListBarang() : Response<WrappedListResponse<BarangDto>>
+    suspend fun getListBarang(
+        @Query("responsible_person_id") userId : Int? = null
+    ) : Response<WrappedListResponse<BarangDto>>
 
     @PUT("services/barang")
     suspend fun updateBarang(
-        @Query("id") id : String,
+        @Query("id") id : Int,
         @Body request : UpdateBarangRequest
     ) : Response<WrappedResponse<BarangDto>>
 

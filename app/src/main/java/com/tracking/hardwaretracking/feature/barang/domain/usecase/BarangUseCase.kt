@@ -11,7 +11,7 @@ import javax.inject.Inject
 class BarangUseCase @Inject constructor(
     private val barangRepository: BarangRepository
 ) {
-    suspend fun getBarang() : Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>> {
-        return barangRepository.getListBarang()
+    suspend fun getBarang(userId : Int?) : Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>> {
+        return barangRepository.getListBarang(userId)
     }
 }

@@ -1,41 +1,40 @@
-package com.tracking.hardwaretracking.feature.barang.presentation
+package com.tracking.hardwaretracking.feature.history
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.tracking.hardwaretracking.R
-import com.tracking.hardwaretracking.databinding.ActivityListBarangBinding
+import com.tracking.hardwaretracking.databinding.ActivityLogBinding
 import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
+import com.tracking.hardwaretracking.feature.barang.presentation.BarangViewModel
 import com.tracking.hardwaretracking.feature.barang.presentation.adapter.BarangAdapter
 import com.tracking.hardwaretracking.feature.hardware.HardwareActivity
-import com.tracking.hardwaretracking.util.ext.gone
 import com.tracking.hardwaretracking.util.ext.showToast
-import com.tracking.hardwaretracking.util.ext.visible
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
-@AndroidEntryPoint
-class ListBarangActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityListBarangBinding
+class LogActivity : AppCompatActivity() {
+    private lateinit var binding : ActivityLogBinding
     private val viewModel: BarangViewModel by viewModels()
-    private lateinit var barangAdapter: BarangAdapter  // Declare adapter as class property
-
+    private lateinit var barangAdapter: BarangAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityListBarangBinding.inflate(layoutInflater)
+        binding = ActivityLogBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         setupRecyclerView()  // Setup UI first
         initObserver()       // Then setup observers
-        fetchBarang()        // Finally fetch data
+        fetchBarang()
     }
 
     private fun setupRecyclerView() {
@@ -46,9 +45,9 @@ class ListBarangActivity : AppCompatActivity() {
             }
         })
 
-        binding.rvBarang.apply {
+        binding.rvLog.apply {
             adapter = barangAdapter
-            layoutManager = LinearLayoutManager(this@ListBarangActivity)
+            layoutManager = LinearLayoutManager(this@LogActivity)
             // Add optional improvements
             setHasFixedSize(true)  // Optimize RecyclerView performance
         }

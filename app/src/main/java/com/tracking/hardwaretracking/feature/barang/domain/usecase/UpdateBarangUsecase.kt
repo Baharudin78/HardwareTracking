@@ -12,7 +12,7 @@ import javax.inject.Inject
 class UpdateBarangUsecase @Inject constructor(
     private val barangRepository: BarangRepository
 ) {
-    suspend fun updateBarang(id : String, request : UpdateBarangRequest) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>> {
+    suspend fun updateBarang(id : Int, request : UpdateBarangRequest) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>> {
         return barangRepository.updateBarang(id, request)
     }
 }

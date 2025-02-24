@@ -18,18 +18,18 @@ data class LogDto(
     val locationTo: String?,
     @SerializedName("note")
     val note: String?,
-    @SerializedName("responsible_from")
-    val responsibleFrom: String?,
+//    @SerializedName("responsible_from")
+//    val responsibleFrom: String?,
     @SerializedName("responsible_from_id")
     val responsibleFromId: String?,
-    @SerializedName("responsible_to")
-    val responsibleTo: String?,
-    @SerializedName("responsible_to_id")
-    val responsibleToId: String?,
+//    @SerializedName("responsible_to")
+//    val responsibleTo: String?,
     @SerializedName("role")
     val role: String?,
     @SerializedName("status")
     val status: String?,
+    @SerializedName("updatedAt")
+    val updatedAt: String?,
     @SerializedName("user")
     val user: UserDto?,
     @SerializedName("user_id")

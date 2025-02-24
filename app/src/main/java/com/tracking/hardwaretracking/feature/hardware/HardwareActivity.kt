@@ -153,7 +153,7 @@ class HardwareActivity : AppCompatActivity() {
         binding.tvQrCode.text = barang?.qrcode
         binding.tvCurrentLocation.text = "Lokasi Sekarang : ${barang?.currentLocation}"
         binding.tvDescLocation.text = "Lokasi Deskripsi : ${barang?.descLocation}"
-        binding.tvResponsibleperson.text = "Pemegang saat ini : ${barang?.responsiblePerson}"
+        binding.tvResponsibleperson.text = "Pemegang saat ini : ${barang?.responsiblePerson?.username}"
 
     }
 
@@ -217,7 +217,7 @@ class HardwareActivity : AppCompatActivity() {
                                 qrcode = barang?.qrcode
                             )
                         }
-                        viewModel.updateProduct(barang?.id.orEmpty(), request)
+                        viewModel.updateProduct(barang?.id ?: 0, request)
                     }
                 }
             }

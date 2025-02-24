@@ -1,12 +1,13 @@
 package com.tracking.hardwaretracking.feature.login.domain.model
 
-import com.google.gson.annotations.SerializedName
-
 data class UserDomain(
-    @SerializedName("email")
-    val email: String?,
-    @SerializedName("id")
-    val id: String?,
-    @SerializedName("name")
-    val name: String?
+    val createdAt: String?,
+    val eH: String?,
+    val flag: String?,
+    val id: Int?,
+    val name: String?,
+    val password: String?,
+    val role: String?,
+    val status: String?,
+    val username: String?
 )

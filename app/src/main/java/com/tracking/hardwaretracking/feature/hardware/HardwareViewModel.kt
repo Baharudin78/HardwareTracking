@@ -50,7 +50,7 @@ class HardwareViewModel @Inject constructor(
         fetchUser()
     }
     fun updateProduct(
-        id: String,
+        id: Int,
         request : UpdateBarangRequest
     ) {
         viewModelScope.launch {

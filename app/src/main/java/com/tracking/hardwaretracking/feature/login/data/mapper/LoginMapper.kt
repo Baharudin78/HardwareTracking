@@ -9,6 +9,6 @@ fun LoginDto.toLoginEntity(): LoginDomain {
         role = role.orEmpty(),
         name = name.orEmpty(),
         email = email.orEmpty(),
-        id = id.orEmpty(),
+        id = id ?: 0,
     )
 }

@@ -147,6 +147,13 @@ class LoginActivity : AppCompatActivity() {
                         }
                     }
                 }
+                loginEntity.id.takeIf { it != 0 }?.let { id ->
+                    coroutineScope {
+                        launch {
+                            dataStore.saveUserIdLogin(id)
+                        }
+                    }
+                }
 
                 goToMainActivity(loginEntity)
             }

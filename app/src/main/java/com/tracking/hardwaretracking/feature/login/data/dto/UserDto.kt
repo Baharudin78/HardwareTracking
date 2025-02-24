@@ -4,8 +4,6 @@ package com.tracking.hardwaretracking.feature.login.data.dto
 import com.google.gson.annotations.SerializedName
 
 data class UserDto(
-    @SerializedName("email")
-    val email: String?,
     @SerializedName("createdAt")
     val createdAt: String?,
     @SerializedName("custom_id")

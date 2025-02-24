@@ -6,11 +6,18 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class BarangDomain(
-    val id: String,
-    val name: String,
-    val qrcode: String,
-    val responsiblePerson: String,
-    val currentLocation: String,
-    val descLocation: String,
-    val encryptQrcode: String,
+    val categoryId: Int?,
+    val createdAt: String?,
+    val currentLocation: String?,
+    val descLocation: String?,
+    val encryptQrcode: String?,
+    val hakMilik: String?,
+    val id: Int?,
+    val name: String?,
+    val qrcode: String?,
+    val responsiblePersonId: Int?,
+    val role: String?,
+    val status: String?,
+    val updatedAt: String?,
+    val responsiblePerson : ResponsiblePersonDomain?
 ) :Parcelable

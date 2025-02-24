@@ -9,9 +9,11 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.tracking.hardwaretracking.util.Constants.MY_PREF
+import com.tracking.hardwaretracking.util.Constants.USER_ID_KEY
 import com.tracking.hardwaretracking.util.Constants.USER_NAME_KEY
 import com.tracking.hardwaretracking.util.Constants.USER_ROLE_KEY
 import com.tracking.hardwaretracking.util.Constants.USER_TOKEN
@@ -26,6 +28,7 @@ class TokenDataStore @Inject constructor(val context: Context) {
         private val USER_TOKEN_KEY = stringPreferencesKey(USER_TOKEN)
         private val USER_ROLE = stringPreferencesKey(USER_ROLE_KEY)
         private val USER_NAME = stringPreferencesKey(USER_NAME_KEY)
+        private val USER_ID = intPreferencesKey(USER_ID_KEY)
     }
 
     suspend fun saveUserToken(token: String) {
@@ -37,6 +40,12 @@ class TokenDataStore @Inject constructor(val context: Context) {
     suspend fun saveRoleLogin(role : String){
         dataStore.edit { preference ->
             preference[USER_ROLE] = role
+        }
+    }
+
+    suspend fun saveUserIdLogin(id : Int) {
+        dataStore.edit { preferences ->
+            preferences[USER_ID] = id
         }
     }
 
@@ -75,5 +84,9 @@ class TokenDataStore @Inject constructor(val context: Context) {
     val userName : Flow<String> = dataStore.data
         .map { preference ->
             preference[USER_NAME] ?: ""
+        }
+    val userId : Flow<Int> = dataStore.data
+        .map { preferences ->
+            preferences[USER_ID] ?: 0
         }
 }

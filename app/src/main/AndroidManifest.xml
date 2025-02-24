@@ -25,6 +25,12 @@
         android:theme="@style/Theme.HardwareTracking"
         tools:targetApi="31">
         <activity
+            android:name=".feature.history.LogActivity"
+            android:exported="false" />
+        <activity
+            android:name=".feature.history.HistoryActivity"
+            android:exported="false" />
+        <activity
             android:name=".feature.barang.presentation.TakeHardwareActivity"
             android:exported="false" />
         <activity

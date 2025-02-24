@@ -88,6 +88,9 @@ dependencies {
     implementation("com.auth0:java-jwt:3.18.2")
 
     implementation("com.google.android.gms:play-services-location:21.2.0")
+    implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation("com.jakewharton.timber:timber:5.0.1")
+
 
 
 

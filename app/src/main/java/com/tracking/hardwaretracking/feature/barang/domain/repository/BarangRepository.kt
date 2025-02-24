@@ -11,8 +11,8 @@ import com.tracking.hardwaretracking.feature.barang.domain.request.UpdateBarangR
 import kotlinx.coroutines.flow.Flow
 
 interface BarangRepository {
-    suspend fun getListBarang() : Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>>
-    suspend fun updateBarang(id : String, request : UpdateBarangRequest) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>>
+    suspend fun getListBarang(userId : Int? = null) : Flow<BaseResult<List<BarangDomain>, WrappedListResponse<BarangDto>>>
+    suspend fun updateBarang(id : Int, request : UpdateBarangRequest) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>>
     suspend fun getDetailBarang(qrcode : String) : Flow<BaseResult<BarangDomain, WrappedResponse<BarangDto>>>
     suspend fun getLog() : Flow<BaseResult<List<LogDomain>, WrappedListResponse<LogDto>>>
 }
