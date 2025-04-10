@@ -7,18 +7,45 @@
     android:background="@color/black"
     tools:context=".feature.scan.ScanActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:titleTextAppearance="@style/ToolbarTitleStyle"
+        app:titleTextColor="@android:color/white"
+        android:background="@color/red_primary"
+        android:elevation="4dp"
+        app:navigationIcon="@drawable/ic_back_small"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Scan"
+            android:textSize="20sp"
+            android:fontFamily="@font/latto_reguler"
+            android:textAppearance="@style/ToolbarTitleStyle"
+            android:textColor="@android:color/white"
+            android:layout_gravity="center"
+            android:id="@+id/toolbar_title"/>
+    </androidx.appcompat.widget.Toolbar>
+
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnScanBarcode"
         android:layout_width="150dp"
         android:layout_height="70dp"
         android:layout_marginTop="50dp"
+        android:visibility="visible"
         android:backgroundTint="@color/red_primary"
-        android:fontFamily="sans-serif-medium"
-        android:text="Scan"
+        android:fontFamily="@font/latto_reguler"
+        android:text="Rescan"
         android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tvDescLocation" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -26,10 +53,10 @@
         android:textSize="17sp"
         android:textColor="@color/white"
         android:id="@+id/tvQrCodeEncrypted"
-        app:layout_constraintTop_toBottomOf="@+id/btnScanBarcode"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/latto_reguler"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -42,7 +69,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQrCodeEncrypted"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/latto_reguler"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -55,7 +82,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQrCodeDecrypted"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/latto_reguler"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -68,7 +95,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvNamaBarang"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/latto_reguler"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -81,7 +108,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvResponsibleName"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/latto_reguler"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 
@@ -94,7 +121,7 @@
         app:layout_constraintTop_toBottomOf="@+id/tvLocation"
         app:layout_constraintStart_toStartOf="parent"
         tools:text="TRDTSFS"
-        android:fontFamily="sans-serif-medium"
+        android:fontFamily="@font/latto_reguler"
         android:layout_marginTop="16dp"
         android:layout_marginStart="16dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

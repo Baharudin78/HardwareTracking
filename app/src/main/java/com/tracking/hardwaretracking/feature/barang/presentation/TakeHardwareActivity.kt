@@ -36,36 +36,43 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import android.util.Base64
+import com.tracking.hardwaretracking.util.Constants.TYPE
 
 @AndroidEntryPoint
 class TakeHardwareActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityTakeHardwareBinding
-    private val viewModel : ScanViewModel by viewModels()
+    private lateinit var binding: ActivityTakeHardwareBinding
+    private val viewModel: ScanViewModel by viewModels()
     private lateinit var codeScanner: CodeScanner
+
+    val typeMenu by lazy {
+        intent.getIntExtra(TYPE, 0)
+    }
+    companion object {
+        private const val CAMERA_REQ = 101
+        const val CAMERA_RESULT = "CAMERA_RESULT"
+        const val DETAIL_BARANG = "DETAIL_BARANG"
+        private const val TAG = "TakeHardwareActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTakeHardwareBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        getPermission()
-        qRScanner()
-        reScan()
-        observerVM()
-        observeVMState()
+        setupCameraPermission()
+        setupQRScanner()
+        setupObservers()
     }
 
-    private fun getPermission() {
+    private fun setupCameraPermission() {
         val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQ)
         }
     }
 
-    private fun qRScanner() {
-        codeScanner = CodeScanner(this, binding.scannerView)
-        codeScanner.apply {
-            isPreviewActive
-            startPreview()
+    private fun setupQRScanner() {
+        codeScanner = CodeScanner(this, binding.scannerView).apply {
             camera = CodeScanner.CAMERA_BACK
             formats = CodeScanner.ALL_FORMATS
             autoFocusMode = AutoFocusMode.SAFE
@@ -73,88 +80,109 @@ class TakeHardwareActivity : AppCompatActivity() {
             isAutoFocusEnabled = true
             isTouchFocusEnabled = true
             isFlashEnabled = false
-            decodeCallback = DecodeCallback {
+
+            decodeCallback = DecodeCallback { result ->
                 runOnUiThread {
-                    try {
-                        Log.w("QRCODEE","encript : ${it.text}")
-                        decryptBase64(it.text)?.let { texy ->
-                            Log.w("QRCODEE","decript : $texy")
-                            viewModel.getBarcodeProduk(texy)
-                        }
-                    }catch (e : Exception) {
-                        Log.w("ajak","ahsdj")
-                        showToast("Produk belum ada")
-                    }
+                    handleScanResult(result.text)
                 }
             }
-            errorCallback = ErrorCallback {
+
+            errorCallback = ErrorCallback { error ->
                 runOnUiThread {
-                    Log.w("ajak","ahsdj")
+                    showToast(getString(R.string.camera_initialization_error))
                 }
-            }
-            binding.scannerView.setOnClickListener {
-                reScan()
             }
         }
 
+        binding.scannerView.setOnClickListener {
+            restartPreview()
+        }
+
+        startPreview()
     }
 
-    private fun observerVM() {
-        viewModel.barang.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { produk ->
-                produk?.let { handleproduk(it) }
+    private fun handleScanResult(scanResult: String) {
+        try {
+            decryptBase64(scanResult)?.let { decryptedText ->
+                viewModel.getBarcodeProduk(decryptedText)
+            } ?: run {
+                showToast(getString(R.string.invalid_qr_code))
+            }
+        } catch (e: Exception) {
+            showToast(getString(R.string.product_not_found))
+        }
+    }
+
+    private fun setupObservers() {
+        // Observe product data
+        viewModel.barang
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { product ->
+                product?.let { handleProduct(it) }
             }
             .launchIn(lifecycleScope)
-    }
-    private fun observeVMState() {
-        viewModel.mState.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).onEach { state ->
-            handleStateChange(state)
-        }.launchIn(lifecycleScope)
+
+        // Observe state changes
+        viewModel.mState
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { state -> handleStateChange(state) }
+            .launchIn(lifecycleScope)
     }
 
-    private fun handleStateChange(state : BarcodeByBarcodeState) {
-        when(state) {
+    private fun handleStateChange(state: BarcodeByBarcodeState) {
+        when (state) {
             is BarcodeByBarcodeState.ShowToast -> showToast(state.message)
             is BarcodeByBarcodeState.Error -> handleError(state.rawResponse)
-            is BarcodeByBarcodeState.Success -> handleproduk(state.barcode)
-            else -> {}
+            is BarcodeByBarcodeState.Success -> handleProduct(state.barcode)
+            else -> { /* Ignore other states */ }
         }
     }
 
     private fun handleError(httpResponse: WrappedResponse<BarangDto>) {
-        httpResponse.message?.let {
-            showGenericAlertDialog(it) }
+        httpResponse.message?.let { errorMessage ->
+            showGenericAlertDialog(errorMessage)
+        }
     }
 
-    private fun handleproduk(barangDomain : BarangDomain) {
-        val intent = Intent(this, HardwareActivity::class.java)
-            .putExtra("DETAIL_BARANG", barangDomain)
-        startActivity(intent)
+    private fun handleProduct(product: BarangDomain) {
+        Intent(this, HardwareActivity::class.java).apply {
+            putExtra(DETAIL_BARANG, product)
+            putExtra(TYPE, typeMenu)
+            startActivity(this)
+        }
         finish()
     }
-    private fun reScan() {
-        codeScanner.startPreview()
 
+    private fun restartPreview() {
+        codeScanner.startPreview()
     }
 
+    private fun startPreview() {
+        codeScanner.startPreview()
+    }
 
     override fun onResume() {
         super.onResume()
-        codeScanner.startPreview()
+        if (::codeScanner.isInitialized) {
+            codeScanner.startPreview()
+        }
     }
 
     override fun onPause() {
-        codeScanner.releaseResources()
+        if (::codeScanner.isInitialized) {
+            codeScanner.releaseResources()
+        }
         super.onPause()
     }
 
-    fun decryptBase64(encodedString: String?): String? {
-        val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
-        return decodedBytes.toString(Charsets.UTF_8)
-    }
-
-    companion object {
-        const val CAMERA_REQ = 101
-        const val CAMERA_RESULT = "CAMERA_RESULT"
+    private fun decryptBase64(encodedString: String?): String? {
+        return try {
+            encodedString?.let {
+                val decodedBytes = Base64.decode(it, Base64.DEFAULT)
+                String(decodedBytes, Charsets.UTF_8)
+            }
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 }

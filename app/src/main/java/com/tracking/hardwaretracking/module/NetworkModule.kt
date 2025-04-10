@@ -5,7 +5,7 @@ import com.chuckerteam.chucker.api.ChuckerCollector
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.chuckerteam.chucker.api.RetentionManager
 import com.tracking.hardwaretracking.core.RequestInterceptor
-import com.tracking.hardwaretracking.core.SharedPrefs
+import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.util.Constants.BASE_URL
 import dagger.Module
 import dagger.Provides
@@ -68,7 +68,7 @@ object NetworkModule {
     }
 
     @Provides
-    fun requestInterceptor(pref : SharedPrefs) : RequestInterceptor{
+    fun requestInterceptor(pref : TokenDataStore) : RequestInterceptor{
         return RequestInterceptor(pref)
     }
 }

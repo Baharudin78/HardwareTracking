@@ -18,4 +18,5 @@ object Constants {
     const val USER_NAME_KEY = "user_name"
     const val USER_ID_KEY = "id_user"
     const val EXTRA_DATA = "EXTRA_DATA"
+    const val TYPE = "TYPE"
 }

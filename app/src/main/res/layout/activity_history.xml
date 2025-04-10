@@ -21,11 +21,11 @@
             android:layout_marginStart="16dp"
             android:layout_marginTop="10dp"
             android:text="History"
+            android:fontFamily="@font/latto_reguler"
             android:textColor="@color/white"
             android:textSize="20sp"
             android:textStyle="bold" />
     </com.google.android.material.appbar.AppBarLayout>
-
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -36,52 +36,106 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBar" />
 
-    <com.google.android.flexbox.FlexboxLayout
-        android:id="@+id/flHeader"
-        android:layout_width="0dp"
+    <ImageView
+        android:id="@+id/ivEmpty"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/ic_nodata"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/appBar"/>
+
+    <TextView
+        android:id="@+id/tvEmpty"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:flexDirection="row"
-        app:flexWrap="nowrap"
+        android:textSize="20sp"
+        android:visibility="gone"
+        android:text="Data Kosong"
+        app:layout_constraintTop_toBottomOf="@+id/ivEmpty"
+        android:textColor="@color/white"
+        android:fontFamily="@font/latto_reguler"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="10dp"/>
+
+    <!-- Header Table -->
+    <TableLayout
+        android:id="@+id/tableHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stretchColumns="*"
+        android:background="@color/red_primary"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appBar">
 
-        <TextView
-            android:id="@+id/tvLabelCustomerName"
+        <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Nama Barang" />
+            android:padding="8dp">
 
-        <TextView
-            android:id="@+id/tvLabelOrderNo"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="TanggaL Diambil" />
+            <TextView
+                android:id="@+id/tvLabelCustomerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/latto_reguler"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Nama Barang" />
 
-        <TextView
-            android:id="@+id/tvLabelTotalOrders"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lokasi" />
+            <TextView
+                android:id="@+id/tvLabelOrderNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/latto_reguler"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Tanggal Diambil" />
 
-        <TextView
-            android:id="@+id/tvLabelOrderDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Note" />
+            <TextView
+                android:id="@+id/tvLabelTotalOrders"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/latto_reguler"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Lokasi" />
 
-    </com.google.android.flexbox.FlexboxLayout>
+            <TextView
+                android:id="@+id/tvLabelOrderDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:fontFamily="@font/latto_reguler"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:text="Note" />
+
+        </TableRow>
+    </TableLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvHistoryList"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
+        android:layout_marginHorizontal="8dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/flHeader"
+        app:layout_constraintTop_toBottomOf="@+id/tableHeader"
         tools:itemCount="4"
         tools:listitem="@layout/item_history" />
 

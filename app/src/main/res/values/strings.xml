@@ -40,4 +40,7 @@
     <string name="button_text_save">Save</string>
     <string name="main_fragment_create">Create</string>
     <string name="action_signout">Sign out</string>
+    <string name="invalid_qr_code">QR Code Salah</string>
+    <string name="camera_initialization_error">Gagal meninisialisai kamera</string>
+    <string name="product_not_found">Product tidak ditemukan</string>
 </resources>

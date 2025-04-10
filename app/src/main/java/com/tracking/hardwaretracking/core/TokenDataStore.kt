@@ -1,10 +1,5 @@
 package com.tracking.hardwaretracking.core
 
-import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
-import javax.inject.Inject
-import javax.inject.Singleton
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -17,6 +12,10 @@ import com.tracking.hardwaretracking.util.Constants.USER_ID_KEY
 import com.tracking.hardwaretracking.util.Constants.USER_NAME_KEY
 import com.tracking.hardwaretracking.util.Constants.USER_ROLE_KEY
 import com.tracking.hardwaretracking.util.Constants.USER_TOKEN
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+import javax.inject.Singleton
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = MY_PREF)
 

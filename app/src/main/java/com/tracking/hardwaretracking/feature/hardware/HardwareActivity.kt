@@ -1,54 +1,37 @@
 package com.tracking.hardwaretracking.feature.hardware
 
-import android.Manifest
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.location.Address
-import android.location.Geocoder
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.viewModels
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.tracking.hardwaretracking.MainActivity
 import com.tracking.hardwaretracking.R
 import com.tracking.hardwaretracking.core.LocationHelper
 import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.core.WrappedResponse
-import com.tracking.hardwaretracking.core.decodeJWT
 import com.tracking.hardwaretracking.databinding.ActivityHardwareBinding
 import com.tracking.hardwaretracking.feature.barang.data.dto.BarangDto
 import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
 import com.tracking.hardwaretracking.feature.barang.domain.request.UpdateBarangRequest
-import com.tracking.hardwaretracking.feature.barang.presentation.BarangViewModel
 import com.tracking.hardwaretracking.feature.login.domain.model.UserDomain
+import com.tracking.hardwaretracking.util.Constants.TYPE
 import com.tracking.hardwaretracking.util.ext.gone
 import com.tracking.hardwaretracking.util.ext.showGenericAlertDialog
 import com.tracking.hardwaretracking.util.ext.showToast
 import com.tracking.hardwaretracking.util.ext.visible
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import java.io.IOException
-import java.util.Locale
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -56,14 +39,20 @@ class HardwareActivity : AppCompatActivity() {
     private lateinit var binding : ActivityHardwareBinding
     private lateinit var locationHelper: LocationHelper
     private var adminUserSelected : String? = null
+    private var hakMilikSelected : String? = null
+    private var adminUserSelectedId : Int? = null
     private val viewModel : HardwareViewModel by viewModels()
 
     val barang by lazy {
         intent.getParcelableExtra<BarangDomain>("DETAIL_BARANG")
     }
 
+    val type by lazy {
+        intent.getIntExtra(TYPE, 0)
+    }
     @Inject
     lateinit var dataStore : TokenDataStore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHardwareBinding.inflate(layoutInflater)
@@ -76,20 +65,25 @@ class HardwareActivity : AppCompatActivity() {
             }
 
             override fun onLocationError(errorMessage: String) {
-                println("Location error: $errorMessage")
+                Log.e("LocationHelper", "Location error: $errorMessage")
             }
         })
-
+        appBarTitle()
         initViews()
         initListener()
         observe()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        finish()
+    private fun appBarTitle(){
+        when(type){
+            1 -> {
+                binding.tvTitleAppBar.text = "Take Over"
+            }
+            2 -> {
+                binding.tvTitleAppBar.text = "Relocate"
+            }
+        }
     }
-
     private fun observe(){
         viewModel.mState
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
@@ -108,32 +102,19 @@ class HardwareActivity : AppCompatActivity() {
             is CreateProductViewState.IsLoading -> handleLoading(state.isLoading)
         }
     }
-
-    private fun observeUsers() {
-        viewModel.users.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { users ->
-                showDropdownUser(users)
-            }
-            .launchIn(lifecycleScope)
-    }
-
     private fun handleSuccess(){
         movePage()
     }
-
-    private fun handleErrorUpload(response: WrappedResponse<BarangDto>){
-        handleLoading(false)
-        showGenericAlertDialog(response.message)
-    }
-
     private fun movePage(){
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finishAffinity()
     }
 
+
     private fun initViews() {
-        CoroutineScope(Dispatchers.Main).launch {
+        binding.tvProduct.text = barang?.name
+        lifecycleScope.launch {
             try {
                 dataStore.userRole.collectLatest { role ->
                     when (role) {
@@ -146,18 +127,14 @@ class HardwareActivity : AppCompatActivity() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("initViews", "Error collecting DataStore values: ${e.message}")
+                print(e.message)
             }
         }
-        binding.tvNamaBarang.text = barang?.name
-        binding.tvQrCode.text = barang?.qrcode
-        binding.tvCurrentLocation.text = "Lokasi Sekarang : ${barang?.currentLocation}"
-        binding.tvDescLocation.text = "Lokasi Deskripsi : ${barang?.descLocation}"
-        binding.tvResponsibleperson.text = "Pemegang saat ini : ${barang?.responsiblePerson?.username}"
-
+        if (type != 1){
+            binding.spinnerHakMilik.visible()
+            showDropdownHakmilik()
+        }
     }
-
-
 
     private fun initAdminMenu() {
         with(binding) {
@@ -166,12 +143,13 @@ class HardwareActivity : AppCompatActivity() {
             observeUsers()
         }
     }
+
     private fun initUserMenu() {
         with(binding) {
             spinner.gone()
             nameInput.visible()
             etUser.isEnabled = false
-            CoroutineScope(Dispatchers.Main).launch {
+            lifecycleScope.launch {
                 dataStore.userName.collectLatest { user ->
                     binding.etUser.setText(user)
                 }
@@ -179,46 +157,107 @@ class HardwareActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDropdownUser(users: List<UserDomain>) {
-        val userNames = users.map { it.name ?: "" }
-        val adapter = ArrayAdapter(this@HardwareActivity, android.R.layout.simple_spinner_dropdown_item, userNames)
-        binding.spinner.adapter = adapter
+    private fun observeUsers() {
+        viewModel.users
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { users ->
+                showDropdownUser(users)
+            }
+            .launchIn(lifecycleScope)
+    }
 
-        binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                val selectedUser = users[position]
-                adminUserSelected = selectedUser.name
+    private fun showDropdownUser(users: List<UserDomain>) {
+        if (type == 1) {
+            // Jika tipe adalah 2, gunakan hanya nama responsiblePerson dan disable spinner
+            val responsiblePersonName = barang?.responsiblePerson?.name ?: ""
+
+            // Buat list dengan hanya satu item (responsiblePerson)
+            val singleUserList = listOf(responsiblePersonName)
+            val adapter = ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, singleUserList)
+
+            binding.spinner.adapter = adapter
+            binding.spinner.isEnabled = false // Disable spinner
+
+            // Set nilai yang dipilih
+            adminUserSelected = responsiblePersonName
+            adminUserSelectedId = barang?.responsiblePersonId
+
+        } else {
+            // Flow normal untuk tipe selain 2
+            val userNames = users.map { it.name ?: "" }
+            val adapter = ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, userNames)
+
+            binding.spinner.adapter = adapter
+            binding.spinner.isEnabled = true // Pastikan spinner diaktifkan
+
+            binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val selectedUser = users[position]
+                    adminUserSelected = selectedUser.name
+                    adminUserSelectedId = selectedUser.id
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // No action needed
+                }
             }
 
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                // Handle nothing selected if needed
+            // Set item yang dipilih (opsional, tergantung kebutuhan)
+            // Jika ingin memilih item default, misalnya item pertama:
+            if (users.isNotEmpty()) {
+                binding.spinner.setSelection(0)
             }
         }
     }
 
+    private fun showDropdownHakmilik() {
+        val hakMilik = listOf("CV", "PT")
+        val adapter = ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, hakMilik)
+        binding.spinnerHakMilik.adapter = adapter  // Perbaikan ini!
+
+        binding.spinnerHakMilik.onItemSelectedListener = object : AdapterView.OnItemSelectedListener { // Perbaikan ini!
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                hakMilikSelected = hakMilik[position]
+                Log.d("DEBUG", "Hak Milik Terpilih: $hakMilikSelected")  // Debugging tambahan
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
+    }
+    private fun handleErrorUpload(response: WrappedResponse<BarangDto>){
+        handleLoading(false)
+        showGenericAlertDialog(response.message)
+    }
+
     private fun initListener() {
         with(binding) {
+            binding.appBar.setNavigationOnClickListener {
+                val intent = Intent(this@HardwareActivity, MainActivity::class.java)
+                startActivity(intent)
+                finishAffinity()
+            }
             btnSubmit.setOnClickListener {
-                CoroutineScope(Dispatchers.Main).launch {
-                    dataStore.userRole.collectLatest { role ->
-                        val request = if (role == "admin") {
-                            UpdateBarangRequest(
-                                responsiblePerson = adminUserSelected,
-                                currentLocation = etCurrentLocation.text.toString(),
-                                descLocation = etDescriptionLocation.text.toString(),
-                                qrcode = barang?.qrcode
-                            )
-                        } else {
-                            Log.d("HARDWARE asu bansatt", "userr")
-                            UpdateBarangRequest(
-                                responsiblePerson = etUser.text.toString(),
-                                currentLocation = etCurrentLocation.text.toString(),
-                                descLocation = etDescriptionLocation.text.toString(),
-                                qrcode = barang?.qrcode
-                            )
-                        }
-                        viewModel.updateProduct(barang?.id ?: 0, request)
-                    }
+                lifecycleScope.launch {
+                    val role = dataStore.userRole.firstOrNull() ?: ""
+
+                    val finalHakMilik = hakMilikSelected  // Simpan dalam variabel lokal
+                    val finalAdminId = adminUserSelectedId  // Simpan dalam variabel lokal
+                    Log.d("DEBUG", "Hak Milik Sebelum Dikirim: $finalHakMilik")  // Debugging tambahan
+
+                    val request = UpdateBarangRequest(
+                        responsiblePersonId = finalAdminId ?: barang?.responsiblePersonId,
+                        currentLocation = etCurrentLocation.text.toString(),
+                        descLocation = etDescriptionLocation.text.toString(),
+                        qrcode = barang?.qrcode,
+                        name = barang?.name,
+                        categoryId = barang?.categoryId,
+                        note = etNote.text.toString(),
+                        hakMilik = finalHakMilik  // Gunakan variabel lokal
+                    )
+
+                    Log.d("DEBUG", "Request yang dikirim: $request")  // Debugging tambahan
+
+                    viewModel.updateProduct(barang?.id ?: 0, request)
                 }
             }
         }
@@ -231,5 +270,4 @@ class HardwareActivity : AppCompatActivity() {
             binding.progressBar.gone()
         }
     }
-
 }

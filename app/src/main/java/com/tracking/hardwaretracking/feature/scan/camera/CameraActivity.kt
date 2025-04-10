@@ -39,31 +39,32 @@ class CameraActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCameraBinding
     private val viewModel: ScanViewModel by viewModels()
     private lateinit var codeScanner: CodeScanner
+
+    companion object {
+        private const val CAMERA_REQ = 101
+        const val CAMERA_RESULT = "CAMERA_RESULT"
+        private const val TAG = "CameraActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityCameraBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        getPermission()
-        qRScanner()
-        reScan()
-        observerVM()
-        observeVMState()
-
+        setupCameraPermission()
+        setupQRScanner()
+        setupObservers()
     }
 
-    private fun getPermission() {
+    private fun setupCameraPermission() {
         val permission = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
         if (permission != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), CAMERA_REQ)
         }
     }
 
-    private fun qRScanner() {
-        codeScanner = CodeScanner(this, binding.scannerView)
-        codeScanner.apply {
-            isPreviewActive
-            startPreview()
+    private fun setupQRScanner() {
+        codeScanner = CodeScanner(this, binding.scannerView).apply {
             camera = CodeScanner.CAMERA_BACK
             formats = CodeScanner.ALL_FORMATS
             autoFocusMode = AutoFocusMode.SAFE
@@ -71,78 +72,79 @@ class CameraActivity : AppCompatActivity() {
             isAutoFocusEnabled = true
             isTouchFocusEnabled = true
             isFlashEnabled = false
-            decodeCallback = DecodeCallback {
+
+            decodeCallback = DecodeCallback { result ->
                 runOnUiThread {
-                    try {
-                        Log.w("QRCODEE","encript : ${it.text}")
-                        decryptBase64(it.text)?.let { texy ->
-                            Log.w("QRCODEE", "decript : $texy")
-                            viewModel.getBarcodeProduk(texy)
-                        }
-                    } catch (e: Exception) {
-                        Log.w("ajak", "ahsdj")
-                        showToast("Produk belum ada")
-                    }
+                    handleScanResult(result.text)
                 }
             }
-            errorCallback = ErrorCallback {
+
+            errorCallback = ErrorCallback { error ->
                 runOnUiThread {
-                    Log.w("ajak", "ahsdj")
-                    showToast("Produk belum ada")
-                    Toast.makeText(
-                        this@CameraActivity, "Camera initialization error: ${it.message}",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    showToast(getString(R.string.camera_initialization_error))
                 }
-            }
-            binding.scannerView.setOnClickListener {
-                reScan()
             }
         }
 
+        binding.scannerView.setOnClickListener {
+            restartPreview()
+        }
     }
 
-    private fun observerVM() {
-        viewModel.barang.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { produk ->
-                produk?.let { handleproduk(it) }
+    private fun handleScanResult(scanResult: String) {
+        try {
+            decryptBase64(scanResult)?.let { decryptedText ->
+                viewModel.getBarcodeProduk(decryptedText)
+            } ?: run {
+                showToast(getString(R.string.invalid_qr_code))
+            }
+        } catch (e: Exception) {
+            showToast(getString(R.string.product_not_found))
+        }
+    }
+
+    private fun setupObservers() {
+        // Observe product data
+        viewModel.barang
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { product ->
+                product?.let { handleProduct(it) }
             }
             .launchIn(lifecycleScope)
-    }
 
-    private fun observeVMState() {
-        viewModel.mState.flowWithLifecycle(lifecycle, Lifecycle.State.STARTED).onEach { state ->
-            handleStateChange(state)
-        }.launchIn(lifecycleScope)
+        // Observe state changes
+        viewModel.mState
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { state -> handleStateChange(state) }
+            .launchIn(lifecycleScope)
     }
 
     private fun handleStateChange(state: BarcodeByBarcodeState) {
         when (state) {
             is BarcodeByBarcodeState.ShowToast -> showToast(state.message)
             is BarcodeByBarcodeState.Error -> handleError(state.rawResponse)
-            is BarcodeByBarcodeState.Success -> handleproduk(state.barcode)
-            else -> {}
+            is BarcodeByBarcodeState.Success -> handleProduct(state.barcode)
+            else -> { /* Ignore other states */ }
         }
     }
 
     private fun handleError(httpResponse: WrappedResponse<BarangDto>) {
-        httpResponse.message?.let {
-            showGenericAlertDialog(it)
+        httpResponse.message?.let { errorMessage ->
+            showGenericAlertDialog(errorMessage)
         }
     }
 
-    private fun handleproduk(barangDomain: BarangDomain) {
-        val intent = Intent()
-        intent.putExtra(CAMERA_RESULT, barangDomain)
-        setResult(Activity.RESULT_OK, intent)
+    private fun handleProduct(product: BarangDomain) {
+        Intent().apply {
+            putExtra(CAMERA_RESULT, product)
+            setResult(Activity.RESULT_OK, this)
+        }
         finish()
     }
 
-    private fun reScan() {
+    private fun restartPreview() {
         codeScanner.startPreview()
-
     }
-
 
     override fun onResume() {
         super.onResume()
@@ -154,13 +156,12 @@ class CameraActivity : AppCompatActivity() {
         super.onPause()
     }
 
-    fun decryptBase64(encodedString: String?): String? {
-        val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
-        return decodedBytes.toString(Charsets.UTF_8)
-    }
-
-    companion object {
-        const val CAMERA_REQ = 101
-        const val CAMERA_RESULT = "CAMERA_RESULT"
+    private fun decryptBase64(encodedString: String?): String? {
+        return try {
+            val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+            String(decodedBytes, Charsets.UTF_8)
+        } catch (e: IllegalArgumentException) {
+            null
+        }
     }
 }

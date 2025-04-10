@@ -9,6 +9,7 @@ import com.tracking.hardwaretracking.feature.login.domain.model.LoginDomain
 import com.tracking.hardwaretracking.feature.login.domain.request.LoginRequest
 import com.tracking.hardwaretracking.feature.login.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -46,7 +47,10 @@ class LoginViewModel @Inject constructor(
     }
 
     private fun showLoading() {
-        setLoading()
+        viewModelScope.launch {
+            _state.value = LoginViewState.IsLoading(true)
+             delay(500)
+        }
     }
 
     private fun handleException(exception: Throwable) {

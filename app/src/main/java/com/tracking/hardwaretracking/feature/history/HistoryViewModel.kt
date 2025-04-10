@@ -38,10 +38,10 @@ class HistoryViewModel @Inject constructor(
     private val _log = MutableStateFlow<List<LogDomain>>(emptyList())
     val log: StateFlow<List<LogDomain>> get() = _log
 
-
-    init {
-      //  fetchLogBarang()
+    private fun showEmptyState() {
+        _state.value = GetHistoryViewState.EmptyData
     }
+
     fun fetchLogBarang() {
         viewModelScope.launch {
             getLogUseCase.getLog()
@@ -50,19 +50,19 @@ class HistoryViewModel @Inject constructor(
                 }
                 .catch { exception ->
                     hideLoading()
-                    Log.d("TESTING", "ERROR ${exception.message}")
-                    Timber.d("${this::class.simpleName} TESTING, error ${exception.message}")
                     showToast(exception.message ?: "Error Occured")
                 }
                 .collect { result ->
                     hideLoading()
                     when (result) {
                         is BaseResult.Success -> {
-                            Log.d("TESTING"," result ${result.data}")
                             _log.value = result.data
+                            if (result.data.isEmpty()) {
+                                showToast("kosong")
+                                showEmptyState()
+                            }
                         }
                         is BaseResult.Error -> {
-                            Log.d("TESINT", "ERROR : ${result.rawResponse.message}")
                             showToast(result.rawResponse.message ?: "Error Occured")
                         }
                     }
@@ -73,5 +73,6 @@ class HistoryViewModel @Inject constructor(
         object Init : GetHistoryViewState()
         data class IsLoading(val isLoading: Boolean) : GetHistoryViewState()
         data class ShowToast(val message: String) : GetHistoryViewState()
+        object EmptyData : GetHistoryViewState()
     }
 }

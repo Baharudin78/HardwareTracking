@@ -1,67 +1,68 @@
 package com.tracking.hardwaretracking.feature.history
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.tracking.hardwaretracking.R
+import com.tracking.hardwaretracking.core.TokenDataStore
 import com.tracking.hardwaretracking.databinding.ActivityLogBinding
-import com.tracking.hardwaretracking.feature.barang.domain.model.BarangDomain
-import com.tracking.hardwaretracking.feature.barang.presentation.BarangViewModel
-import com.tracking.hardwaretracking.feature.barang.presentation.adapter.BarangAdapter
-import com.tracking.hardwaretracking.feature.hardware.HardwareActivity
+import com.tracking.hardwaretracking.feature.barang.domain.model.LogDomain
+import com.tracking.hardwaretracking.feature.history.adapter.LogAdapter
+import com.tracking.hardwaretracking.util.ext.gone
 import com.tracking.hardwaretracking.util.ext.showToast
+import com.tracking.hardwaretracking.util.ext.visible
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class LogActivity : AppCompatActivity() {
     private lateinit var binding : ActivityLogBinding
-    private val viewModel: BarangViewModel by viewModels()
-    private lateinit var barangAdapter: BarangAdapter
+    private val viewModel: HistoryViewModel by viewModels()
+    private lateinit var historyAdapter: LogAdapter
+    @Inject
+    lateinit var tokenDataStore: TokenDataStore
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLogBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+        setupInitialViews()
         setupRecyclerView()  // Setup UI first
         initObserver()       // Then setup observers
         fetchBarang()
     }
 
     private fun setupRecyclerView() {
-        barangAdapter = BarangAdapter(mutableListOf())
-        barangAdapter.setItemClick(object : BarangAdapter.OnItemClick {
-            override fun onClick(barangDomain: BarangDomain) {
-                navigateToDetail(barangDomain)
+        historyAdapter = LogAdapter(mutableListOf())  // Create HistoryAdapter instance
+        historyAdapter.setItemClick(object : LogAdapter.OnItemClick {
+            override fun onClick(logDomain: LogDomain) {
+                // Handle click event
             }
         })
 
         binding.rvLog.apply {
-            adapter = barangAdapter
+            adapter = historyAdapter  // Set the correct adapter
             layoutManager = LinearLayoutManager(this@LogActivity)
-            // Add optional improvements
-            setHasFixedSize(true)  // Optimize RecyclerView performance
         }
-    }
-
-    private fun navigateToDetail(barangDomain: BarangDomain) {
-        val intent = Intent(this, HardwareActivity::class.java).apply {
-            putExtra("DETAIL_BARANG", barangDomain)
-        }
-        startActivity(intent)
     }
 
     private fun fetchBarang() {
-        viewModel.fetchBarang()
+        viewModel.fetchLogBarang()
+    }
+
+    private fun setupInitialViews() {
+        // Sembunyikan tampilan empty state secara default
+        binding.ivEmpty.gone()
+        binding.tvEmpty.gone()
     }
 
     private fun initObserver() {
@@ -79,30 +80,59 @@ class LogActivity : AppCompatActivity() {
     }
 
     private fun observeBarang() {
-        viewModel.barang
-            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { barangList ->
-                Log.d("ListBarang", "Received barang list: $barangList")
-                handleBarangList(barangList)
-            }
-            .launchIn(lifecycleScope)
+        lifecycleScope.launch {
+            val userIdLogin = tokenDataStore.userId.firstOrNull() ?: 0
+            viewModel.log
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collectLatest { logs ->
+                    val filteredLogs = logs.filter { it.userId == userIdLogin }
+                    Log.d("LOGS", " FILTERED : $filteredLogs")
+                    if (filteredLogs.isEmpty()) {
+                        // Jika hasil filter kosong, tampilkan empty state
+                        binding.ivEmpty.visible()
+                        binding.tvEmpty.visible()
+                        binding.tableHeader.gone()
+                        binding.rvLog.gone()
+                    } else {
+                        // Jika hasil filter ada, tampilkan data
+                        binding.ivEmpty.gone()
+                        binding.tvEmpty.gone()
+                        binding.tableHeader.visible()
+                        binding.rvLog.visible()
+                        handleHistory(filteredLogs)
+                    }
+                }
+        }
     }
 
-    private fun handleBarangList(barangList: List<BarangDomain>) {
-        // Directly update adapter since we have a reference to it
-        barangAdapter.updateListBarang(barangList)
+    private fun handleHistory(logs: List<LogDomain>) {
+        historyAdapter.updateLog(logs)
     }
 
-    private fun handleState(state: BarangViewModel.GetBarangViewState) {
+    private fun handleState(state: HistoryViewModel.GetHistoryViewState) {
         when (state) {
-            is BarangViewModel.GetBarangViewState.IsLoading -> handleLoading(state.isLoading)
-            is BarangViewModel.GetBarangViewState.ShowToast -> showToast(state.message)
-            is BarangViewModel.GetBarangViewState.Init -> Unit
+            is HistoryViewModel.GetHistoryViewState.IsLoading -> handleLoading(state.isLoading)
+            is HistoryViewModel.GetHistoryViewState.ShowToast -> this.showToast(state.message)
+            is HistoryViewModel.GetHistoryViewState.Init -> Unit
+            is HistoryViewModel.GetHistoryViewState.EmptyData -> handleEmptyState()
             else -> {}
         }
     }
 
+    private fun handleEmptyState() {
+        binding.ivEmpty.visible()
+        binding.tvEmpty.visible()
+        binding.tableHeader.gone()
+        binding.rvLog.gone()
+    }
+
     private fun handleLoading(isLoading: Boolean) {
-        binding.progressBar.isVisible = isLoading  // Using isVisible property for cleaner syntax
+        if (isLoading) {
+            binding.progressBar.visible()
+            binding.ivEmpty.gone()
+            binding.tvEmpty.gone()
+        } else {
+            binding.progressBar.gone()
+        }
     }
 }

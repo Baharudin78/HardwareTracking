@@ -1,46 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.flexbox.FlexboxLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/flContainer"
+    android:id="@+id/tableContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingTop="10dp"
-    android:paddingBottom="10dp"
-    app:alignItems="center"
-    app:flexDirection="row"
-    app:flexWrap="nowrap">
+    android:stretchColumns="*">
 
-    <TextView
-        android:id="@+id/tvName"
+    <TableRow
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingEnd="5dp"
-        tools:text="Laptop" />
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/tvDateChange"
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/latto_reguler"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            tools:text="Laptop" />
+
+        <TextView
+            android:id="@+id/tvDateChange"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/latto_reguler"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            tools:text="14 maran 1993" />
+
+        <TextView
+            android:id="@+id/tvLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/latto_reguler"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            tools:text="Wonogriti" />
+
+        <TextView
+            android:id="@+id/tvNote"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="@font/latto_reguler"
+            android:gravity="center_vertical"
+            android:textColor="@color/white"
+            tools:text="pindah" />
+    </TableRow>
+
+    <!-- Optional divider between items -->
+    <View
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingEnd="5dp"
-        tools:text="14 maran 1993" />
-
-    <TextView
-        android:id="@+id/tvLocation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingEnd="5dp"
-        tools:text="Wonogriti" />
-
-    <TextView
-        android:id="@+id/tvNote"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingStart="0dp"
-        android:paddingEnd="5dp"
-        tools:text="pindah" />
-
-</com.google.android.flexbox.FlexboxLayout>
+        android:layout_height="1dp"
+        android:background="#33FFFFFF" />
+</TableLayout>

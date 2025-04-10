@@ -90,10 +90,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun observe() {
-        viewModel.state
-            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-            .onEach { state -> handleStateChange(state) }
-            .launchIn(lifecycleScope)
+        lifecycleScope.launch {
+            viewModel.state
+                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+                .collect { state -> handleStateChange(state) }
+        }
     }
 
     private suspend fun handleStateChange(state: LoginViewState) {
@@ -107,13 +108,14 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun handleErrorLogin(response: WrappedResponse<LoginDto>) {
-        showGenericAlertDialog(response.message)
+        showGenericAlertDialog("Username atau Password Salah")
     }
 
     private fun handleLoading(isLoading: Boolean) {
         binding.loginButton.isEnabled = !isLoading
         if (isLoading) {
             binding.loadingProgressBar.visible()
+            binding.loadingProgressBar.isIndeterminate = true
         } else {
             binding.loadingProgressBar.gone()
         }
@@ -162,11 +164,12 @@ class LoginActivity : AppCompatActivity() {
 
 
     private fun goToMainActivity(loginEntity: LoginDomain) {
-        startActivity(
-            Intent(this@LoginActivity, MainActivity::class.java)
-                .putExtra("USER",loginEntity)
-        )
-        finish()
+        val intent = Intent(this@LoginActivity, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            putExtra("USER", loginEntity)
+        }
+        startActivity(intent)
+        // finishAffinity() tidak diperlukan karena FLAG_ACTIVITY_CLEAR_TASK sudah membersihkan stack
     }
 
 
