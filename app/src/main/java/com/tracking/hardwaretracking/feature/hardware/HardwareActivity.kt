@@ -36,12 +36,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class HardwareActivity : AppCompatActivity() {
-    private lateinit var binding : ActivityHardwareBinding
+    private lateinit var binding: ActivityHardwareBinding
     private lateinit var locationHelper: LocationHelper
-    private var adminUserSelected : String? = null
-    private var hakMilikSelected : String? = null
-    private var adminUserSelectedId : Int? = null
-    private val viewModel : HardwareViewModel by viewModels()
+    private var adminUserSelected: String? = null
+    private var hakMilikSelected: String? = null
+    private var adminUserSelectedId: Int? = null
+    private val viewModel: HardwareViewModel by viewModels()
 
     val barang by lazy {
         intent.getParcelableExtra<BarangDomain>("DETAIL_BARANG")
@@ -50,8 +50,9 @@ class HardwareActivity : AppCompatActivity() {
     val type by lazy {
         intent.getIntExtra(TYPE, 0)
     }
+
     @Inject
-    lateinit var dataStore : TokenDataStore
+    lateinit var dataStore: TokenDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -74,17 +75,19 @@ class HardwareActivity : AppCompatActivity() {
         observe()
     }
 
-    private fun appBarTitle(){
-        when(type){
+    private fun appBarTitle() {
+        when (type) {
             1 -> {
                 binding.tvTitleAppBar.text = "Take Over"
             }
+
             2 -> {
                 binding.tvTitleAppBar.text = "Relocate"
             }
         }
     }
-    private fun observe(){
+
+    private fun observe() {
         viewModel.mState
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { state ->
@@ -93,8 +96,8 @@ class HardwareActivity : AppCompatActivity() {
             .launchIn(lifecycleScope)
     }
 
-    private fun handleStateChange(state: CreateProductViewState){
-        when(state){
+    private fun handleStateChange(state: CreateProductViewState) {
+        when (state) {
             is CreateProductViewState.Init -> Unit
             is CreateProductViewState.ErrorUpload -> handleErrorUpload(state.rawResponse)
             is CreateProductViewState.SuccessCreate -> handleSuccess()
@@ -102,10 +105,12 @@ class HardwareActivity : AppCompatActivity() {
             is CreateProductViewState.IsLoading -> handleLoading(state.isLoading)
         }
     }
-    private fun handleSuccess(){
+
+    private fun handleSuccess() {
         movePage()
     }
-    private fun movePage(){
+
+    private fun movePage() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finishAffinity()
@@ -121,6 +126,7 @@ class HardwareActivity : AppCompatActivity() {
                         "admin" -> {
                             initAdminMenu()
                         }
+
                         "user" -> {
                             initUserMenu()
                         }
@@ -130,10 +136,7 @@ class HardwareActivity : AppCompatActivity() {
                 print(e.message)
             }
         }
-        if (type != 1){
-            binding.spinnerHakMilik.visible()
-            showDropdownHakmilik()
-        }
+
     }
 
     private fun initAdminMenu() {
@@ -169,29 +172,45 @@ class HardwareActivity : AppCompatActivity() {
     private fun showDropdownUser(users: List<UserDomain>) {
         if (type == 1) {
             // Jika tipe adalah 2, gunakan hanya nama responsiblePerson dan disable spinner
-            val responsiblePersonName = barang?.responsiblePerson?.name ?: ""
+            lifecycleScope.launch {
+                dataStore.userName.collectLatest { user ->
+                    val responsiblePersonName = user
+                    val singleUserList = listOf(responsiblePersonName)
+                    val adapter = ArrayAdapter(
+                        this@HardwareActivity,
+                        R.layout.spinner_dropdown_item,
+                        singleUserList
+                    )
+
+                    binding.spinner.adapter = adapter
+                    binding.spinner.isEnabled = false // Disable spinner
+
+                    // Set nilai yang dipilih
+                    adminUserSelected = responsiblePersonName
+                    dataStore.userId.collectLatest { userId ->
+                        adminUserSelectedId = userId
+                    }
+                }
+            }
 
             // Buat list dengan hanya satu item (responsiblePerson)
-            val singleUserList = listOf(responsiblePersonName)
-            val adapter = ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, singleUserList)
-
-            binding.spinner.adapter = adapter
-            binding.spinner.isEnabled = false // Disable spinner
-
-            // Set nilai yang dipilih
-            adminUserSelected = responsiblePersonName
-            adminUserSelectedId = barang?.responsiblePersonId
 
         } else {
             // Flow normal untuk tipe selain 2
             val userNames = users.map { it.name ?: "" }
-            val adapter = ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, userNames)
+            val adapter =
+                ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, userNames)
 
             binding.spinner.adapter = adapter
             binding.spinner.isEnabled = true // Pastikan spinner diaktifkan
 
             binding.spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
+                ) {
                     val selectedUser = users[position]
                     adminUserSelected = selectedUser.name
                     adminUserSelectedId = selectedUser.id
@@ -210,21 +229,7 @@ class HardwareActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDropdownHakmilik() {
-        val hakMilik = listOf("CV", "PT")
-        val adapter = ArrayAdapter(this@HardwareActivity, R.layout.spinner_dropdown_item, hakMilik)
-        binding.spinnerHakMilik.adapter = adapter  // Perbaikan ini!
-
-        binding.spinnerHakMilik.onItemSelectedListener = object : AdapterView.OnItemSelectedListener { // Perbaikan ini!
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                hakMilikSelected = hakMilik[position]
-                Log.d("DEBUG", "Hak Milik Terpilih: $hakMilikSelected")  // Debugging tambahan
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {}
-        }
-    }
-    private fun handleErrorUpload(response: WrappedResponse<BarangDto>){
+    private fun handleErrorUpload(response: WrappedResponse<BarangDto>) {
         handleLoading(false)
         showGenericAlertDialog(response.message)
     }
@@ -242,7 +247,10 @@ class HardwareActivity : AppCompatActivity() {
 
                     val finalHakMilik = hakMilikSelected  // Simpan dalam variabel lokal
                     val finalAdminId = adminUserSelectedId  // Simpan dalam variabel lokal
-                    Log.d("DEBUG", "Hak Milik Sebelum Dikirim: $finalHakMilik")  // Debugging tambahan
+                    Log.d(
+                        "DEBUG",
+                        "Hak Milik Sebelum Dikirim: $finalHakMilik"
+                    )  // Debugging tambahan
 
                     val request = UpdateBarangRequest(
                         responsiblePersonId = finalAdminId ?: barang?.responsiblePersonId,
@@ -263,10 +271,10 @@ class HardwareActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleLoading(isLoading: Boolean){
-        if(isLoading){
+    private fun handleLoading(isLoading: Boolean) {
+        if (isLoading) {
             binding.progressBar.visible()
-        }else{
+        } else {
             binding.progressBar.gone()
         }
     }

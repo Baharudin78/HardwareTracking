@@ -37,7 +37,7 @@ class HistoryAdapter(
         fun bindItem(logDomain: LogDomain) {
             binding.apply {
                 tvName.text = logDomain.barang?.name
-                tvLocation.text = logDomain.barang?.currentLocation
+                tvLocation.text = logDomain.locationTo ?: "-"
                 tvNote.text = logDomain.note
                 tvDateChange.text = logDomain.createdAt?.toFormattedDate()
 

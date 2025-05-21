@@ -38,12 +38,14 @@ class ScanActivity : AppCompatActivity() {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val dataMsg = result.data?.getParcelableExtra<BarangDomain>(CameraActivity.CAMERA_RESULT)
-                binding.tvQrCodeEncrypted.text = "Encrypted QR : ${dataMsg?.encryptQrcode}"
-                binding.tvQrCodeDecrypted.text = "QrCode : ${dataMsg?.qrcode}"
-                binding.tvNamaBarang.text = "Nama Barang : ${dataMsg?.name}"
-                binding.tvResponsibleName.text = "Responsible Name : ${dataMsg?.responsiblePerson?.name}"
-                binding.tvLocation.text = "Location : ${dataMsg?.currentLocation}"
-                binding.tvDescLocation.text = "Desc Location : ${dataMsg?.descLocation}"
+
+                // Update the table cells with the scanned data
+                binding.tvQrCodeEncrypted.text = dataMsg?.encryptQrcode ?: ""
+                binding.tvQrCodeDecrypted.text = dataMsg?.qrcode ?: ""
+                binding.tvNamaBarang.text = dataMsg?.name ?: ""
+                binding.tvResponsibleName.text = dataMsg?.responsiblePerson?.name ?: ""
+                binding.tvLocation.text = dataMsg?.currentLocation ?: ""
+                binding.tvDescLocation.text = dataMsg?.descLocation ?: ""
             }
         }
 }
